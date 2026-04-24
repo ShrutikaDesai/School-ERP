@@ -1,0 +1,47 @@
+/* soft academic background */
+.erp-layout{
+background:
+linear-gradient(
+180deg,
+#f4f8fb 0%,
+#eef5ff 100%
+);
+}
+
+/* logo area */
+.erp-logo{
+letter-spacing:1px;
+font-weight:700;
+}
+
+/* header */
+.erp-header{
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+/* content card feel */
+.erp-content{
+transition:.3s;
+}
+
+.erp-content:hover{
+transform:translateY(-1px);
+}
+
+/* sidebar items */
+.ant-menu-item{
+margin:8px 10px !important;
+border-radius:8px !important;
+}
+
+/* active item */
+.ant-menu-dark .ant-menu-item-selected{
+box-shadow:0 3px 10px rgba(25,118,210,.25);
+}
+
+/* avatar */
+.admin-avatar{
+box-shadow:0 0 0 4px rgba(21,101,192,.12);
+}
