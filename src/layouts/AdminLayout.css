@@ -1,47 +1,71 @@
-/* soft academic background */
-.erp-layout{
-background:
-linear-gradient(
-180deg,
-#f4f8fb 0%,
-#eef5ff 100%
-);
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
 }
 
-/* logo area */
-.erp-logo{
-letter-spacing:1px;
-font-weight:700;
+* {
+    box-sizing: border-box;
 }
 
-/* header */
-.erp-header{
-position:sticky;
-top:0;
-z-index:1000;
+.erp-layout {
+    width: 100%;
+    overflow: hidden !important;
+    background:
+        linear-gradient(180deg,
+            #f4f8fb 0%,
+            #eef5ff 100%);
 }
 
-/* content card feel */
-.erp-content{
-transition:.3s;
+.ant-layout {
+    overflow-x: hidden !important;
 }
 
-.erp-content:hover{
-transform:translateY(-1px);
+.ant-layout-sider {
+    overflow-x: hidden !important;
 }
 
-/* sidebar items */
-.ant-menu-item{
-margin:8px 10px !important;
-border-radius:8px !important;
+.ant-menu {
+    overflow-x: hidden !important;
 }
 
-/* active item */
-.ant-menu-dark .ant-menu-item-selected{
-box-shadow:0 3px 10px rgba(25,118,210,.25);
+/* logo */
+.erp-logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+/* menu items */
+.ant-menu-item {
+    margin: 8px 10px !important;
+    border-radius: 8px !important;
+}
+
+/* selected menu */
+.ant-menu-dark .ant-menu-item-selected {
+    box-shadow: 0 3px 10px rgba(25, 118, 210, .25);
 }
 
 /* avatar */
-.admin-avatar{
-box-shadow:0 0 0 4px rgba(21,101,192,.12);
+.admin-avatar {
+    box-shadow: 0 0 0 4px rgba(21, 101, 192, .12);
+}
+
+/* content hover */
+.erp-content {
+    transition: .3s;
+}
+
+.erp-content:hover {
+    transform: translateY(-1px);
 }

@@ -32,14 +32,17 @@ const adminTheme = {
       bodyBg: "#F4F8FB",
     },
 
-    Menu: {
-      darkItemBg: "#0D47A1",
-      darkItemColor: "#DCEBFF",
-      darkItemHoverBg: "#1565C0",
-      darkItemSelectedBg: "#1976D2",
-      darkItemSelectedColor: "#ffffff",
-    },
+  Menu: {
+darkItemBg: "#0D47A1",
+darkItemColor: "#DCEBFF",
+darkItemHoverBg: "#1565C0",
+darkItemSelectedBg: "#1976D2",
+darkItemSelectedColor: "#ffffff",
 
+/* add these */
+darkSubMenuItemBg: "#0D47A1",
+darkPopupBg: "#0D47A1"
+},
     Button: {
       borderRadius: 8,
       controlHeight: 40,

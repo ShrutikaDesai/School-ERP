@@ -9,7 +9,7 @@ import {
   Typography,
   Drawer,
   Grid,
-  theme,
+  theme
 } from "antd";
 
 import {
@@ -23,10 +23,15 @@ import {
   FileTextOutlined,
   SettingOutlined,
   UserOutlined,
-  LogoutOutlined,
+  LogoutOutlined
 } from "@ant-design/icons";
 
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import {
+  Outlet,
+  useNavigate,
+  useLocation
+} from "react-router-dom";
+
 import "./AdminLayout.css";
 
 const { Header, Sider, Content } = Layout;
@@ -34,6 +39,7 @@ const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const AdminLayout = () => {
+
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -47,35 +53,45 @@ const AdminLayout = () => {
 
   const menuItems = [
     {
-      key: "/dashboard",
+      key: "/",
       icon: <DashboardOutlined />,
-      label: "Dashboard",
+      label: "Dashboard"
     },
     {
       key: "/students",
       icon: <TeamOutlined />,
-      label: "Students",
+      label: "Students"
     },
     {
-      key: "/academics",
+      key: "academics",
       icon: <BookOutlined />,
       label: "Academics",
+      children: [
+        {
+          key: "/classes",
+          label: "Classes"
+        },
+        {
+          key: "/sections",
+          label: "Sections"
+        }
+      ]
     },
     {
       key: "/attendance",
       icon: <CalendarOutlined />,
-      label: "Attendance",
+      label: "Attendance"
     },
     {
       key: "/reports",
       icon: <FileTextOutlined />,
-      label: "Reports",
+      label: "Reports"
     },
     {
       key: "/settings",
       icon: <SettingOutlined />,
-      label: "Settings",
-    },
+      label: "Settings"
+    }
   ];
 
   const profileMenu = {
@@ -83,52 +99,61 @@ const AdminLayout = () => {
       {
         key: "1",
         icon: <UserOutlined />,
-        label: "Profile",
+        label: "Profile"
       },
       {
         key: "2",
         icon: <LogoutOutlined />,
-        label: "Logout",
-      },
-    ],
+        label: "Logout"
+      }
+    ]
   };
 
-  const handleMenuClick = ({ key }) => {
-    navigate(key);
-    if (isMobile) {
-      setDrawerOpen(false);
-    }
-  };
+const handleMenuClick = ({ key }) => {
+
+if(key.startsWith("/")){
+ navigate(key);
+}
+
+if(isMobile){
+ setDrawerOpen(false);
+}
+
+};
 
   return (
+
     <Layout
       className="erp-layout"
-      style={{ minHeight: "100vh" }}
+      style={{
+        height: "100vh",
+        overflow: "hidden"
+      }}
     >
+
       {/* Desktop Sidebar */}
+
       {!isMobile && (
+
         <Sider
           collapsible
           collapsed={collapsed}
           trigger={null}
           width={250}
+          collapsedWidth={80}
           style={{
             background: token.colorPrimary,
+            position: "fixed",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            height: "100vh",
+            overflowY: "auto",
+            overflowX: "hidden"
           }}
         >
-          <div
-            className="erp-logo"
-            style={{
-              height:64,
-              display:"flex",
-              alignItems:"center",
-              justifyContent:"center",
-              color:"#fff",
-              fontSize:20,
-              fontWeight:700,
-              borderBottom:"1px solid rgba(255,255,255,.1)",
-            }}
-          >
+
+          <div className="erp-logo">
             {collapsed ? "ERP" : "School ERP"}
           </div>
 
@@ -139,54 +164,80 @@ const AdminLayout = () => {
             items={menuItems}
             onClick={handleMenuClick}
           />
+
         </Sider>
+
       )}
 
-      {/* Mobile Drawer Sidebar */}
+
+
+      {/* Mobile Drawer */}
+
       <Drawer
         title="School ERP"
         placement="left"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         width={250}
-        bodyStyle={{ padding:0 }}
+        bodyStyle={{ padding: 0 }}
       >
+
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={handleMenuClick}
           style={{
-            borderRight:0,
-            height:"100%",
+            borderRight: 0,
+            height: "100%",
+            overflowX: "hidden"
           }}
         />
+
       </Drawer>
 
-      <Layout>
+
+
+      {/* Main Layout */}
+
+      <Layout
+        style={{
+          marginLeft: isMobile ? 0 : (collapsed ? 80 : 250),
+          transition: "all .2s ease",
+          minWidth: 0,
+          overflowX: "hidden"
+        }}
+      >
 
         {/* Header */}
+
         <Header
           className="erp-header"
           style={{
+            position: "fixed",
+            top: 0,
+            right: 0,
+            left: isMobile ? 0 : (collapsed ? 80 : 250),
+            zIndex: 1000,
+            height: 64,
             background: token.colorBgContainer,
             padding: isMobile ? "0 16px" : "0 24px",
-            display:"flex",
-            justifyContent:"space-between",
-            alignItems:"center",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
             boxShadow: token.boxShadow,
+            transition: "all .2s ease"
           }}
         >
+
           <Button
             type="text"
             icon={
-              isMobile ? (
-                <MenuOutlined />
-              ) : collapsed ? (
-                <MenuUnfoldOutlined />
-              ) : (
-                <MenuFoldOutlined />
-              )
+              isMobile
+                ? <MenuOutlined />
+                : collapsed
+                  ? <MenuUnfoldOutlined />
+                  : <MenuFoldOutlined />
             }
             onClick={() =>
               isMobile
@@ -194,18 +245,14 @@ const AdminLayout = () => {
                 : setCollapsed(!collapsed)
             }
             style={{
-              fontSize:18,
+              fontSize: 18
             }}
           />
 
           <Space size={isMobile ? "small" : "middle"}>
+
             {!isMobile && (
-              <Text
-                strong
-                style={{
-                  color: token.colorText,
-                }}
-              >
+              <Text strong>
                 Welcome Admin
               </Text>
             )}
@@ -215,31 +262,46 @@ const AdminLayout = () => {
               placement="bottomRight"
             >
               <Avatar
+                className="admin-avatar"
                 size="large"
                 icon={<UserOutlined />}
                 style={{
-                  cursor:"pointer",
-                  backgroundColor: token.colorPrimary,
+                  cursor: "pointer",
+                  backgroundColor: token.colorPrimary
                 }}
               />
             </Dropdown>
+
           </Space>
+
         </Header>
 
-        {/* Main Content */}
+
+
+        {/* Scrollable Content */}
+
         <Content
+          className="erp-content"
           style={{
-            padding: isMobile ? 16 : "24px 32px",
-            minHeight:"calc(100vh - 64px)",
-            background: token.colorBgLayout,
+            marginTop: 4,
+            height: "calc(100vh - 64px)",
+            overflowY: "auto",
+            overflowX: "hidden",
+            padding: isMobile ? "35px 8px" : "40px 0px",
+            background: token.colorBgLayout
           }}
         >
+
           <Outlet />
+
         </Content>
 
       </Layout>
+
     </Layout>
+
   );
+
 };
 
 export default AdminLayout;
