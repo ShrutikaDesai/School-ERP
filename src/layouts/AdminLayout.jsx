@@ -336,15 +336,23 @@ const AdminLayout = () => {
 )}
 
         {/* CONTENT */}
-        <Content
-          style={{
-            marginTop: 64,
-            height: "calc(100vh - 64px)",
-            overflowY: "auto",
-            padding: isMobile ? 12 : 20,
-            background: token.colorBgLayout
-          }}
-        >
+       <Content
+  style={{
+    marginTop: isAuthPage ? 0 : 64,
+    height: isAuthPage
+      ? "100vh"
+      : "calc(100vh - 64px)",
+
+    overflowY: "auto",
+    padding: isAuthPage
+      ? 0
+      : isMobile
+        ? 12
+        : 20,
+
+    background: token.colorBgLayout
+  }}
+>
           <Outlet />
         </Content>
 
