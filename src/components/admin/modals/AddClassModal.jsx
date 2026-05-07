@@ -1,12 +1,26 @@
-import React from "react";
-import { Modal, Form, Input, Select, Row, Col } from "antd";
+import React, { useEffect } from "react";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  Row,
+  Col,
+  Typography,
+  Divider,
+  Button
+} from "antd";
+
+const { Title, Text } = Typography;
 
 const AddClassModal = ({
   open,
   onClose,
   mode,
-  initialValues
+  initialValues,
+  onSubmit
 }) => {
+  const [form] = Form.useForm();
 
   const isView = mode === "view";
   const isEdit = mode === "edit";
@@ -18,57 +32,97 @@ const AddClassModal = ({
       ? "Edit Class"
       : "View Class";
 
+  useEffect(() => {
+    if (!open) {
+      form.resetFields();
+      return;
+    }
+
+    form.setFieldsValue({
+      className: initialValues?.className ?? "",
+      teacher: initialValues?.teacher ?? "",
+      sections: initialValues?.sections ?? [],
+      students: initialValues?.students ?? ""
+    });
+  }, [form, initialValues, open]);
+
+  const handleOk = async () => {
+    if (isView) {
+      onClose();
+      return;
+    }
+
+    const values = await form.validateFields();
+    onSubmit?.(values);
+  };
+
   return (
     <Modal
-      title={modalTitle}
       open={open}
       onCancel={onClose}
-      onOk={onClose}
-      okText={isView ? "Close" : "Save"}
-      destroyOnHidden
-      cancelButtonProps={{
-        style: {
-          display: isView ? "none" : "inline-block"
-        }
-      }}
-      width={700}
+      footer={null}
       centered
+      width={700}
+      className="custom-modal"
     >
-      <Form
-        layout="vertical"
-        initialValues={initialValues}
-      >
+      {/* HEADER */}
+      <div style={{ marginBottom: 10 }}>
+        <Title level={4} style={{ marginBottom: 0 }}>
+          {modalTitle}
+        </Title>
+        <Text type="secondary">
+          Manage class details and structure
+        </Text>
+      </div>
 
+      <Divider />
+
+      <Form form={form} layout="vertical">
         <Row gutter={16}>
-
           <Col span={12}>
-            <Form.Item label="Class Name" name="className">
+            <Form.Item
+              label="Class Name"
+              name="className"
+              rules={[{ required: true, message: "Please enter class name" }]}
+            >
               <Input
                 disabled={isView}
-                placeholder="Enter class name (e.g. 10th A)"
+                size="large"
+                placeholder="e.g. FY BCA"
+                style={{ borderRadius: 8 }}
               />
             </Form.Item>
           </Col>
 
           <Col span={12}>
-            <Form.Item label="Coordinator" name="teacher">
+            <Form.Item
+              label="Coordinator"
+              name="teacher"
+              rules={[{ required: true, message: "Enter coordinator name" }]}
+            >
               <Input
                 disabled={isView}
-                placeholder="Enter coordinator / teacher name"
+                size="large"
+                placeholder="Enter teacher name"
+                style={{ borderRadius: 8 }}
               />
             </Form.Item>
           </Col>
-
         </Row>
 
         <Row gutter={16}>
-
           <Col span={12}>
-            <Form.Item label="Sections" name="sections">
+            <Form.Item
+              label="Sections"
+              name="sections"
+              rules={[{ required: true, message: "Select sections" }]}
+            >
               <Select
                 mode="multiple"
                 disabled={isView}
-                placeholder="Select sections (A, B, C...)"
+                size="large"
+                placeholder="Select sections"
+                style={{ borderRadius: 8 }}
                 options={[
                   { label: "A", value: "A" },
                   { label: "B", value: "B" },
@@ -80,27 +134,57 @@ const AddClassModal = ({
           </Col>
 
           <Col span={12}>
-            <Form.Item label="Students Count" name="students">
+            <Form.Item
+              label="Student Count"
+              name="students"
+              rules={[{ required: true, message: "Enter student count" }]}
+            >
               <Input
                 disabled={isView}
-                placeholder="Enter total number of students"
+                type="number"
+                size="large"
+                placeholder="Enter students"
+                style={{ borderRadius: 8 }}
               />
             </Form.Item>
           </Col>
-
-          {/* <Col span={12}>
-            <Form.Item label="Capacity %" name="capacity">
-              <Input
-                disabled={isView}
-                placeholder="Enter capacity percentage (e.g. 80%)"
-              />
-            </Form.Item>
-          </Col> */}
-
         </Row>
 
-       
+        {/* FOOTER BUTTONS */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginTop: 20,
+            gap: 10
+          }}
+        >
+          {!isView && (
+            <Button
+              onClick={onClose}
+              size="large"
+              style={{ borderRadius: 8 }}
+            >
+              Cancel
+            </Button>
+          )}
 
+          <Button
+            type="primary"
+            size="large"
+            onClick={handleOk}
+            style={{
+              borderRadius: 8,
+              background: isView
+                ? "#d9d9d9"
+                : "linear-gradient(45deg, #1976d2, #42a5f5)",
+              border: "none",
+              padding: "0 24px"
+            }}
+          >
+            {isView ? "Close" : isEdit ? "Update" : "Add"}
+          </Button>
+        </div>
       </Form>
     </Modal>
   );

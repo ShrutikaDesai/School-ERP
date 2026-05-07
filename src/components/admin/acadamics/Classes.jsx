@@ -6,7 +6,6 @@ import {
     Typography,
     Button,
     Chip,
-    LinearProgress,
     TextField,
     MenuItem,
     InputAdornment,
@@ -23,10 +22,11 @@ import {
     Search,
     Download,
     Visibility,
-    Edit
+    Edit,
+    Delete 
 } from "@mui/icons-material";
 
-import { Grid as AntGrid } from "antd";
+import { Grid as AntGrid, Modal  } from "antd";
 import AddClassModal from "../modals/AddClassModal.jsx";
 const { useBreakpoint } = AntGrid;
 import * as XLSX from "xlsx";
@@ -35,7 +35,7 @@ import { useGridApiRef } from "@mui/x-data-grid";
 
 
 
-const rows = [
+const initialRows = [
     {
         id: 1,
         className: "FY BCA",
@@ -116,35 +116,88 @@ function ClassesContent() {
     // const screens = AntGrid.useBreakpoint();
     const screens = useBreakpoint();
     const apiRef = useGridApiRef();
-const [openModal,setOpenModal]=useState(false);
-const [modalMode,setModalMode]=useState("add");
-const [selectedClass,setSelectedClass]=useState(null);
+    const [rows, setRows] = useState(initialRows);
+    const [openModal, setOpenModal] = useState(false);
+    const [modalMode, setModalMode] = useState("add");
+    const [selectedClass, setSelectedClass] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+const [rowToDelete, setRowToDelete] = useState(null);
+const [searchText, setSearchText] = useState("");
+const [classFilter, setClassFilter] = useState("all");
 
-const handleOpen = () => {
-    setOpenModal(true);
+    const handleClose = () => {
+        setOpenModal(false);
+        setSelectedClass(null);
+    };
+
+    const handleAdd = () => {
+        setModalMode("add");
+        setSelectedClass(null);
+        setOpenModal(true);
+    };
+
+    const handleView = (record) => {
+        setModalMode("view");
+        setSelectedClass(record);
+        setOpenModal(true);
+    };
+
+    const handleEdit = (record) => {
+        setModalMode("edit");
+        setSelectedClass(record);
+        setOpenModal(true);
+    };
+
+    const handleDeleteClick = (row) => {
+    setRowToDelete(row);
+    setDeleteModalOpen(true);
 };
 
-const handleClose = () => {
-    setOpenModal(false);
+const handleConfirmDelete = () => {
+    setRows(prev => prev.filter(r => r.id !== rowToDelete.id));
+    setDeleteModalOpen(false);
+    setRowToDelete(null);
 };
 
-const handleAdd = () => {
-setModalMode("add");
-setSelectedClass(null);
-setOpenModal(true);
+const handleCancelDelete = () => {
+    setDeleteModalOpen(false);
+    setRowToDelete(null);
 };
 
-const handleView = (record) => {
-setModalMode("view");
-setSelectedClass(record);
-setOpenModal(true);
-};
+    const handleSubmitClass = (values) => {
+        const normalizedData = {
+            className: values.className.trim(),
+            teacher: values.teacher.trim(),
+            sections: values.sections,
+            sectionCount: values.sections.length,
+            students: Number(values.students),
+            capacity: selectedClass?.capacity ?? 0,
+            status: selectedClass?.status ?? "Active"
+        };
 
-const handleEdit = (record) => {
-setModalMode("edit");
-setSelectedClass(record);
-setOpenModal(true);
-};
+        if (modalMode === "edit" && selectedClass) {
+            setRows((currentRows) =>
+                currentRows.map((row) =>
+                    row.id === selectedClass.id
+                        ? { ...row, ...normalizedData }
+                        : row
+                )
+            );
+        } else {
+            setRows((currentRows) => [
+                ...currentRows,
+                {
+                    id:
+                        currentRows.length > 0
+                            ? Math.max(...currentRows.map((row) => row.id)) + 1
+                            : 1,
+                    ...normalizedData
+                }
+            ]);
+        }
+
+        handleClose();
+    };
 
 const handleExport = () => {
     const visibleRows = Array.from(
@@ -152,16 +205,51 @@ const handleExport = () => {
     );
 
     const now = new Date();
+    const exportDate = now.toLocaleDateString();
+    const exportTime = now.toLocaleTimeString();
 
-    const exportData = visibleRows.map((row) => ({
-        ...row,
-        exportDate: now.toLocaleDateString(),
-        exportTime: now.toLocaleTimeString()
+    const exportData = visibleRows.map((row, index) => ({
+        "Sr No.": index + 1,
+        Class: row.className,
+        Sections: Array.isArray(row.sections) ? row.sections.join(", ") : row.sections,
+        "Sections Count": row.sectionCount,
+        Students: row.students,
+        "Capacity (%)": row.capacity,
+        Coordinator: row.teacher,
+        Status: row.status
     }));
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([
+        ["Classes Data Export"],
+        ["Export Date", exportDate],
+        ["Export Time", exportTime],
+        []
+    ]);
 
+    // 🔥 Add custom rows at top
+
+    // 🔥 Shift table data down (important)
+    XLSX.utils.sheet_add_json(worksheet, exportData, {
+        origin: "A5",
+        skipHeader: false
+    });
+
+    worksheet["!cols"] = [
+        { wch: 10 },
+        { wch: 18 },
+        { wch: 20 },
+        { wch: 16 },
+        { wch: 12 },
+        { wch: 14 },
+        { wch: 20 },
+        { wch: 12 }
+    ];
+
+    worksheet["!merges"] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }
+    ];
+
+    const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Classes");
 
     const excelBuffer = XLSX.write(workbook, {
@@ -173,138 +261,145 @@ const handleExport = () => {
         type: "application/octet-stream"
     });
 
-    saveAs(file, "classes_filtered_data.xlsx");
+    saveAs(file, "classes_data.xlsx");
 };
 
-const columns = [
+const filteredRows = rows.filter((row) => {
+    const matchesSearch =
+        row.className.toLowerCase().includes(searchText.toLowerCase()) ||
+        row.teacher.toLowerCase().includes(searchText.toLowerCase());
 
-    {
-        field: "className",
-        headerName: "Class",
-        flex: 1
-    },
+    const matchesClass =
+        classFilter === "all" || row.className === classFilter;
 
-    {
-        field: "sections",
-        headerName: "Sections",
-        flex: 1.4,
-        renderCell: (params) => (
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    flexWrap: "wrap",
-                    minHeight: "100%",
-                    py: 1
-                }}
-            >
-                {params.value.map((sec) => (
-                    <Chip
-                        key={sec}
-                        label={sec}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                    />
-                ))}
-            </Box>
-        )
-    },
+    return matchesSearch && matchesClass;
+});
 
-    {
-        field: "sectionCount",
-        headerName: "Sections Count",
-        flex: 1
-    },
 
-    {
-        field: "students",
-        headerName: "Students",
-        flex: 1
-    },
+    const columns = [
 
-    {
-        field: "capacity",
-        headerName: "Capacity",
-        flex: 1.3,
-        renderCell: (params) => (
-            <Box
-                sx={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    minHeight: "100%",
-                    py: 1
-                }}
-            >
-                <LinearProgress
-                    variant="determinate"
-                    value={params.value}
-                />
+        {
+            field: "srNo",
+            headerName: "Sr No.",
+            width: 70,
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => (
+                params.api.getRowIndexRelativeToVisibleRows(params.id) + 1
+            )
+        },
 
-                <Typography variant="caption">
-                    {params.value}%
-                </Typography>
-            </Box>
-        )
-    },
+        {
+            field: "className",
+            headerName: "Class",
+            flex: 1
+        },
 
-    {
-        field: "teacher",
-        headerName: "Coordinator",
-        flex: 1
-    },
+        {
+            field: "sections",
+            headerName: "Sections",
+            flex: 1.4,
+            renderCell: (params) => (
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        flexWrap: "wrap",
+                        minHeight: "100%",
+                        py: 1
+                    }}
+                >
+                    {params.value.map((sec) => (
+                        <Chip
+                            key={sec}
+                            label={sec}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                        />
+                    ))}
+                </Box>
+            )
+        },
 
-    {
-        field: "status",
-        headerName: "Status",
-        flex: 1,
-        renderCell: (params) => (
-            <Chip
-                label={params.value}
+        {
+            field: "sectionCount",
+            headerName: "Sections Count",
+            flex: 1
+        },
+
+        {
+            field: "students",
+            headerName: "Student Count",
+            flex: 1
+        },
+
+        {
+            field: "capacity",
+            headerName: "Capacity",
+            flex: 1,
+            renderCell: (params) => `${params.value}%`
+        },
+
+        {
+            field: "teacher",
+            headerName: "Coordinator",
+            flex: 1
+        },
+
+          {
+             field: "status",
+             headerName: "Status",
+             flex: 1,
+             renderCell: (params) => (
+               <Chip
+                 label={params.value}
+                 sx={{
+                   background:
+                     params.value === "Active"
+                       ? "linear-gradient(45deg,#4CAF50,#81C784)"
+                       : "#E0E0E0",
+                   color: params.value === "Active" ? "#fff" : "#333"
+                 }}
+               />
+             )
+           },
+
+       {
+    field: "action",
+    headerName: "Action",
+    flex: 1,
+    sortable: false,
+    renderCell: (params) => (
+        <Box display="flex">
+            <IconButton
                 size="small"
-                sx={{
-                    background:
-                        params.value === "Active"
-                            ? "#5A84D6"
-                            : "#ECECEC",
-                    color:
-                        params.value === "Active"
-                            ? "#fff"
-                            : "#111"
-                }}
-            />
-        )
-    },
+                onClick={() => handleView(params.row)}
+            >
+                <Visibility />
+            </IconButton>
 
-    {
-        field: "action",
-        headerName: "Action",
-        flex: 1,
-        sortable: false,
-        renderCell: (params) => (
-            <Box display="flex">
-                <IconButton
-                    size="small"
-                    onClick={() => handleView(params.row)}
-                >
-                    <Visibility />
-                </IconButton>
+            <IconButton
+                size="small"
+                color="primary"
+                onClick={() => handleEdit(params.row)}
+            >
+                <Edit />
+            </IconButton>
 
-                <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={() => handleEdit(params.row)}
-                >
-                    <Edit />
-                </IconButton>
-            </Box>
-        )
-    }
+            <IconButton
+                size="small"
+                color="error"
+                onClick={() => handleDeleteClick(params.row)}
+            >
+                <Delete />
+            </IconButton>
+        </Box>
+    )
+}
 
-];
+    ];
 
     return (
 
@@ -313,8 +408,8 @@ const columns = [
                 width: "100%",
                 maxWidth: 1440,
                 mx: "auto",
-                px: screens.xs ? 2 : 4,
-                py: screens.xs ? 3 : 6
+                px: screens.xs ? 0 : 1,
+                py: screens.xs ? 3 : 1
             }}
         >
 
@@ -339,13 +434,13 @@ const columns = [
                     </Typography>
                 </Box>
 
-<Button
-variant="contained"
-startIcon={<Add />}
-onClick={handleAdd}
->
-Add Class
-</Button>
+                <Button
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={handleAdd}
+                >
+                    Add Class
+                </Button>
 
             </Stack>
 
@@ -396,31 +491,36 @@ Add Class
             <Box sx={{ mb: 3 }}>
                 <Row gutter={[16, 16]} align="middle" justify="space-between">
                     <Col xs={24} sm={24} md={12} lg={10} xl={9}>
-                        <TextField
-                            fullWidth
-                            size="small"
-                            placeholder="Search Class"
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Search />
-                                    </InputAdornment>
-                                )
-                            }}
-                        />
+                       <TextField
+    fullWidth
+    size="small"
+    placeholder="Search Class"
+    value={searchText}
+    onChange={(e) => setSearchText(e.target.value)}
+    InputProps={{
+        startAdornment: (
+            <InputAdornment position="start">
+                <Search />
+            </InputAdornment>
+        )
+    }}
+/>
                     </Col>
 
                     <Col xs={24} sm={12} md={7} lg={5} xl={4}>
-                        <TextField
-                            select
-                            fullWidth
-                            size="small"
-                            defaultValue="all"
-                        >
-                            <MenuItem value="all">All Classes</MenuItem>
-                            <MenuItem value="bca">BCA</MenuItem>
-                            <MenuItem value="bsc">BSc</MenuItem>
-                        </TextField>
+                       <TextField
+    select
+    fullWidth
+    size="small"
+    value={classFilter}
+    onChange={(e) => setClassFilter(e.target.value)}
+>
+    <MenuItem value="all">All Classes</MenuItem>
+    <MenuItem value="FY BCA">FY BCA</MenuItem>
+    <MenuItem value="SY BCA">SY BCA</MenuItem>
+    <MenuItem value="TY BCA">TY BCA</MenuItem>
+    <MenuItem value="FY BSc">FY BSc</MenuItem>
+</TextField>
                     </Col>
 
                     <Col xs={24} sm={12} md={5} lg={9} xl={11}>
@@ -430,17 +530,17 @@ Add Class
                                 justifyContent: { xs: "stretch", md: "flex-end" }
                             }}
                         >
-                           <Button
-    variant="outlined"
-    startIcon={<Download />}
-    onClick={handleExport}
-    sx={{
-        width: { xs: "100%", sm: "auto" },
-        minWidth: { md: 140 }
-    }}
->
-    Export
-</Button>
+                            <Button
+                                variant="outlined"
+                                startIcon={<Download />}
+                                onClick={handleExport}
+                                sx={{
+                                    width: { xs: "100%", sm: "auto" },
+                                    minWidth: { md: 140 }
+                                }}
+                            >
+                                Export
+                            </Button>
                         </Box>
                     </Col>
                 </Row>
@@ -459,13 +559,25 @@ Add Class
                 <Box sx={{ overflowX: "auto" }}>
 
                     <DataGrid
-                           apiRef={apiRef}
-                        rows={rows}
+                        apiRef={apiRef}
+                        rows={filteredRows}
                         columns={columns}
                         autoHeight
-                        hideFooter
                         disableRowSelectionOnClick
                         rowHeight={72}
+
+                        pagination
+                        pageSizeOptions={[5, 10, 20, 50]}
+
+                        initialState={{
+                            pagination: {
+                                paginationModel: {
+                                    pageSize: 5,
+                                    page: 0
+                                }
+                            }
+                        }}
+
                         sx={{
                             minWidth: screens.xs ? 950 : "100%",
                             border: 0
@@ -477,14 +589,41 @@ Add Class
             </Paper>
 
 
-<AddClassModal
-open={openModal}
-onClose={()=>setOpenModal(false)}
-mode={modalMode}
-initialValues={selectedClass}
-/>
+            <AddClassModal
+                open={openModal}
+                onClose={handleClose}
+                mode={modalMode}
+                initialValues={selectedClass}
+                onSubmit={handleSubmitClass}
+            />
 
+<Modal
+    open={deleteModalOpen}
+    onCancel={handleCancelDelete}
+    onOk={handleConfirmDelete}
+    okText="Delete"
+    cancelText="Cancel"
+    centered
+    okButtonProps={{
+        danger: true,
+        style: {
+            background: "linear-gradient(45deg,#ff4d4f,#ff7875)",
+            border: "none"
+        }
+    }}
+    bodyStyle={{ padding: "20px 10px" }}
+>
+    <Box textAlign="center">
+        <Typography variant="h6" sx={{ mb: 1 }}>
+            Delete Class
+        </Typography>
 
+        <Typography color="text.secondary">
+            Are you sure you want to delete{" "}
+            <b>{rowToDelete?.className}</b> class?
+        </Typography>
+    </Box>
+</Modal>
 
         </Box>
 

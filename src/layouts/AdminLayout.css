@@ -1,4 +1,4 @@
-html,
+/* html,
 body,
 #root {
     height: 100%;
@@ -32,7 +32,7 @@ body,
     overflow-x: hidden !important;
 }
 
-/* logo */
+
 .erp-logo {
     height: 64px;
     display: flex;
@@ -45,27 +45,203 @@ body,
     border-bottom: 1px solid rgba(255, 255, 255, .1);
 }
 
-/* menu items */
 .ant-menu-item {
     margin: 8px 10px !important;
     border-radius: 8px !important;
 }
 
-/* selected menu */
+
 .ant-menu-dark .ant-menu-item-selected {
     box-shadow: 0 3px 10px rgba(25, 118, 210, .25);
 }
 
-/* avatar */
+
 .admin-avatar {
     box-shadow: 0 0 0 4px rgba(21, 101, 192, .12);
 }
 
-/* content hover */
+
 .erp-content {
     transition: .3s;
 }
 
 .erp-content:hover {
     transform: translateY(-1px);
+} */
+
+
+/* upword old */
+
+
+
+.ant-layout-sider {
+    background: linear-gradient(180deg, #1565c0, #0d47a1) !important;
+    padding: 12px 8px;
+}
+
+
+.erp-logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.ant-menu-submenu {
+    position: relative;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 12px 8px !important;
+    border-radius: 14px !important;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+
+.ant-menu-submenu-open {
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+}
+
+.ant-menu-submenu::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 4px;
+    border-radius: 4px;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.ant-menu-submenu-open::before {
+    background: linear-gradient(180deg, #00e5ff, #00b0ff);
+}
+.ant-menu-submenu:hover {
+    transform: translateY(-2px) scale(1.01);
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.ant-menu-submenu-title {
+    font-weight: 600;
+    font-size: 13px;
+    padding: 14px 16px !important;
+    letter-spacing: 0.5px;
+}
+
+.ant-menu-item {
+    position: relative;
+    margin: 6px 10px !important;
+    border-radius: 8px !important;
+    height: 38px !important;
+    display: flex;
+    align-items: center;
+    transition: all 0.25s ease;
+    color: #ffffff !important;
+}
+
+.ant-menu-item::before {
+    content: "";
+    position: absolute;
+    left: -6px;
+    height: 60%;
+    width: 3px;
+    border-radius: 4px;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.ant-menu-dark .ant-menu-item:hover {
+    background: rgba(255,255,255,0.18) !important;
+    transform: none !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+    background: #ffffff !important;
+    color: #1565c0 !important;
+    font-weight: 600;
+}
+
+.ant-menu-dark .ant-menu-item-selected::before {
+    background: linear-gradient(180deg, #00e5ff, #00b0ff);
+}
+
+.ant-menu-dark .ant-menu-item-selected .anticon {
+    color: #1565c0 !important;
+}
+
+.ant-menu {
+    background: transparent !important;
+    border-right: none !important;
+}
+
+.ant-menu-item:first-child {
+    margin: 12px 8px !important; 
+    background: rgba(255,255,255,0.08);
+    border-radius: 14px !important; 
+}
+
+.ant-menu-item:first-child::before {
+    display: none;
+}
+
+.erp-user-panel-wrapper {
+    padding: 16px 10px;
+}
+
+.erp-user-panel {
+    background: rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    transition: 0.3s;
+}
+
+.erp-user-panel:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.16);
+}
+
+.erp-user-avatar {
+    border: 2px solid rgba(255,255,255,0.4);
+}
+
+.erp-user-info {
+    margin-top: 10px;
+    color: #fff;
+}
+
+.erp-user-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.erp-user-role {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.ant-drawer-body {
+    padding: 0 !important;
+}
+
+
+.ant-drawer-content-wrapper {
+    background: linear-gradient(180deg, #1565c0, #0d47a1) !important;
+}
+
+.ant-drawer-header {
+    background: #1565c0 !important;
+}
+
+.ant-drawer-title {
+    color: white !important;
 }
