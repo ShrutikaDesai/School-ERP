@@ -3,7 +3,6 @@ import {
   Row,
   Col,
   Card,
-  Statistic,
   Table,
   Typography,
   Button,
@@ -21,6 +20,7 @@ import {
 } from "@ant-design/icons";
 
 import { Column } from "@ant-design/plots";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -31,6 +31,7 @@ const Dashboard = () => {
   const { token } = theme.useToken();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
+  const navigate = useNavigate();
 
   const [selectedClass, setSelectedClass] = useState("all");
 
@@ -140,13 +141,29 @@ const Dashboard = () => {
         padding: isMobile ? 12 : 24
       }}
     >
-
-      <Title
-        level={isMobile ? 4 : 3}
-        style={{ marginBottom: 24 }}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "stretch" : "center",
+          justifyContent: "space-between",
+          gap: 12,
+          marginBottom: 24
+        }}
       >
-        Academic ERP Dashboard
-      </Title>
+        <div style={{ flex: 1 }}>
+          <Title
+            level={isMobile ? 4 : 3}
+            style={{ margin: 0 }}
+          >
+            Dashboard
+          </Title>
+
+          <Text type="secondary">
+            Monitor academic performance, attendance, and student activity
+          </Text>
+        </div>
+      </div>
 
 
 
@@ -393,51 +410,55 @@ const Dashboard = () => {
 
       {/* Buttons */}
 
-      <Card
-        title="Quick Reports"
-        style={{
-          marginTop: 24,
-          boxShadow: token.boxShadow
-        }}
-      >
-        <Space
-          wrap
-          direction={isMobile ? "vertical" : "horizontal"}
-          style={{
-            width: isMobile ? "100%" : "auto"
-          }}
-        >
+     <Card
+  title="Quick Reports"
+  style={{
+    marginTop: 24,
+    boxShadow: token.boxShadow
+  }}
+>
+  <Space
+    wrap
+    direction={isMobile ? "vertical" : "horizontal"}
+    style={{
+      width: isMobile ? "100%" : "auto"
+    }}
+  >
 
-          <Button
-            block={isMobile}
-            type="primary"
-          >
-            Attendance Report
-          </Button>
+    <Button
+      block={isMobile}
+      type="primary"
+      onClick={() => navigate("/attendance-report")}
+    >
+      Attendance Reports
+    </Button>
 
-          <Button
-            block={isMobile}
-            type="primary"
-          >
-            Student Performance
-          </Button>
+    <Button
+      block={isMobile}
+      type="primary"
+      onClick={() => navigate("/students")}
+    >
+      Student Reports
+    </Button>
 
-          <Button
-            block={isMobile}
-            type="primary"
-          >
-            Academic Reports
-          </Button>
+    <Button
+      block={isMobile}
+      type="primary"
+      onClick={() => navigate("/classes")}
+    >
+      Class Reports
+    </Button>
 
-          <Button
-            block={isMobile}
-            type="primary"
-          >
-            Export Analytics
-          </Button>
+    <Button
+      block={isMobile}
+      type="primary"
+      onClick={() => navigate("/sections")}
+    >
+      Section Reports
+    </Button>
 
-        </Space>
-      </Card>
+  </Space>
+</Card>
 
     </div>
   );

@@ -36,13 +36,13 @@ const reportTypes = [
     icon: <SchoolIcon />,
     bg: "#F3E8FF",
   },
-  {
-    title: "Summary Report",
-    route: "/reports",
-    desc: "Overview of all school statistics including total students, teachers, classes, and attendance metrics.",
-    icon: <BarChartIcon />,
-    bg: "#FFF4E5",
-  },
+{
+  title: "Section Reports",
+  route: "/sections",
+  desc: "View and manage all section-wise reports including student distribution, attendance, and academic performance.",
+  icon: <BarChartIcon />,
+  bg: "#FFF4E5",
+},
 ];
 
 const recentReports = [

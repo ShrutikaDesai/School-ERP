@@ -12,7 +12,7 @@ import {
   Stack,
 } from "@mui/material";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
-import { Card, Col, Row, Grid as AntGrid,Modal } from "antd";
+import { Card, Col, Row, Grid as AntGrid, Modal } from "antd";
 import {
   Add,
   Groups,
@@ -65,21 +65,76 @@ const initialRows = [
 
 /* ================= Stat Card ================= */
 
-const StatCard = ({ icon, value, label, color }) => (
+/* ================= Stat Card ================= */
+
+const StatCard = ({ icon, value, label, iconBg, iconColor }) => (
   <Card
     style={{
-      height: "100%",
-      borderRadius: 12,
+      borderRadius: 16,
       border: "1px solid #E5E7EB",
-      boxShadow: "0 4px 12px rgba(21,101,192,0.08)"
+      boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+      height: "100%",
+    }}
+    bodyStyle={{
+      padding: "20px",
     }}
   >
-    <Box display="flex" gap={2} alignItems="center">
-      <Box sx={{ color }}>{icon}</Box>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 2,
+        minHeight: 70,
+      }}
+    >
+      {/* ICON */}
+      <Box
+        sx={{
+          width: 58,
+          height: 58,
+          minWidth: 58,
+          borderRadius: "16px",
+          backgroundColor: iconBg,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: iconColor,
 
-      <Box>
-        <Typography variant="h5">{value}</Typography>
-        <Typography color="text.secondary">{label}</Typography>
+          "& svg": {
+            fontSize: 30,
+          },
+        }}
+      >
+        {icon}
+      </Box>
+
+      {/* CONTENT */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          variant="h5"
+          fontWeight={700}
+          sx={{
+            lineHeight: 1.1,
+          }}
+        >
+          {value}
+        </Typography>
+
+        <Typography
+          sx={{
+            color: "#6B7280",
+            fontSize: 14,
+            mt: 0.5,
+          }}
+        >
+          {label}
+        </Typography>
       </Box>
     </Box>
   </Card>
@@ -96,9 +151,10 @@ function SectionsContent() {
   const [modalMode, setModalMode] = useState('add');
   const [selectedRow, setSelectedRow] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-const [rowToDelete, setRowToDelete] = useState(null);
-const [searchText, setSearchText] = useState("");
-const [classFilter, setClassFilter] = useState("all");
+  const [rowToDelete, setRowToDelete] = useState(null);
+  const [searchText, setSearchText] = useState("");
+  const [classFilter, setClassFilter] = useState("");
+  const [sectionFilter, setSectionFilter] = useState("");
 
   const handleOpenModal = () => {
     setModalMode('add');
@@ -121,20 +177,20 @@ const [classFilter, setClassFilter] = useState("all");
   };
 
   const handleConfirmDelete = () => {
-  setRows(prev => prev.filter(row => row.id !== rowToDelete.id));
-  setDeleteModalOpen(false);
-  setRowToDelete(null);
-};
+    setRows(prev => prev.filter(row => row.id !== rowToDelete.id));
+    setDeleteModalOpen(false);
+    setRowToDelete(null);
+  };
 
-const handleCancelDelete = () => {
-  setDeleteModalOpen(false);
-  setRowToDelete(null);
-};
+  const handleCancelDelete = () => {
+    setDeleteModalOpen(false);
+    setRowToDelete(null);
+  };
 
-const handleDeleteClick = (row) => {
-  setRowToDelete(row);
-  setDeleteModalOpen(true);
-};
+  const handleDeleteClick = (row) => {
+    setRowToDelete(row);
+    setDeleteModalOpen(true);
+  };
 
   const handleAddSection = (values) => {
     if (modalMode === 'add') {
@@ -175,18 +231,19 @@ const handleDeleteClick = (row) => {
   };
 
   const classOptions = Array.from(new Set(rows.map((row) => row.className)));
+  const sectionOptions = Array.from(new Set(rows.map((row) => row.sectionName)));
 
   const filteredRows = rows.filter((row) => {
-  const searchMatch =
-    row.sectionName.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.className.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.teacher.toLowerCase().includes(searchText.toLowerCase());
+    const searchMatch =
+      row.sectionName.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.className.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.teacher.toLowerCase().includes(searchText.toLowerCase());
 
-  const classMatch =
-    classFilter === "all" || row.className === classFilter;
+    const classMatch = !classFilter || row.className === classFilter;
+    const sectionMatch = !sectionFilter || row.sectionName === sectionFilter;
 
-  return searchMatch && classMatch;
-});
+    return searchMatch && classMatch && sectionMatch;
+  });
 
   /* ================= Columns ================= */
 
@@ -213,18 +270,18 @@ const handleDeleteClick = (row) => {
       headerName: "Student Count",
       flex: 1
     },
-     {
-            field: "capacity",
-            headerName: "Capacity",
-            flex: 0,
-            renderCell: (params) => `${params.value}%`
-        },
+    {
+      field: "capacity",
+      headerName: "Capacity",
+      flex: 0,
+      renderCell: (params) => `${params.value}%`
+    },
     {
       field: "teacher",
       headerName: "Coordinator",
       flex: 1
     },
-     {
+    {
       field: "status",
       headerName: "Status",
       flex: 1,
@@ -241,30 +298,30 @@ const handleDeleteClick = (row) => {
         />
       )
     },
-  {
-  field: "action",
-  headerName: "Action",
-  flex: 1,
-  renderCell: (params) => (
-    <Box>
-      <IconButton size="small" onClick={() => handleView(params.row)}>
-        <Visibility />
-      </IconButton>
+    {
+      field: "action",
+      headerName: "Action",
+      flex: 1,
+      renderCell: (params) => (
+        <Box>
+          <IconButton size="small" onClick={() => handleView(params.row)}>
+            <Visibility />
+          </IconButton>
 
-      <IconButton size="small" color="primary" onClick={() => handleEdit(params.row)}>
-        <Edit />
-      </IconButton>
+          <IconButton size="small" color="primary" onClick={() => handleEdit(params.row)}>
+            <Edit />
+          </IconButton>
 
-      <IconButton
-        size="small"
-        color="error"
-        onClick={() => handleDeleteClick(params.row)}
-      >
-        <Delete />
-      </IconButton>
-    </Box>
-  )
-}
+          <IconButton
+            size="small"
+            color="error"
+            onClick={() => handleDeleteClick(params.row)}
+          >
+            <Delete />
+          </IconButton>
+        </Box>
+      )
+    }
   ];
 
   /* ================= UI ================= */
@@ -310,85 +367,113 @@ const handleDeleteClick = (row) => {
             flexDirection: screens.md ? "row" : "column"
           }}
         >
-         <Button
-  variant="contained"
-  startIcon={<Add />}
-  onClick={handleOpenModal}
-  sx={{
-    width: screens.md ? "auto" : "100%",
-    minWidth: 160
-  }}
->
-  Add Section
-</Button>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={handleOpenModal}
+            sx={{
+              width: screens.md ? "auto" : "100%",
+              minWidth: 160
+            }}
+          >
+            Add Section
+          </Button>
         </Box>
       </Box>
 
+
       {/* Stats */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            icon={<Apartment />}
-            value="18"
-            label="Total Sections"
-            color="#1976d2"
-          />
-        </Col>
+      <Box sx={{ mb: 4 }}>
+        <Row gutter={[16, 16]}>
 
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            icon={<Groups />}
-            value="520"
-            label="Students"
-            color="green"
-          />
-        </Col>
+          <Col xs={24} sm={12} lg={8}>
+            <StatCard
+              icon={<Apartment />}
+              value={rows.length}
+              label="Total Sections"
+              iconBg="#E3F2FD"
+              iconColor="#1565C0"
+            />
+          </Col>
 
-        <Col xs={24} sm={12} lg={6}>
-          <StatCard
-            icon={<MenuBook />}
-            value="24"
-            label="Faculty"
-            color="#f57c00"
-          />
-        </Col>
-      </Row>
+          <Col xs={24} sm={12} lg={8}>
+            <StatCard
+              icon={<Groups />}
+              value={rows.reduce((acc, row) => acc + row.students, 0)}
+              label="Students"
+              iconBg="#E8F5E9"
+              iconColor="#2E7D32"
+            />
+          </Col>
+
+          <Col xs={24} sm={12} lg={8}>
+            <StatCard
+              icon={<MenuBook />}
+              value={new Set(rows.map((row) => row.teacher)).size}
+              label="Faculty"
+              iconBg="#FFF3E0"
+              iconColor="#EF6C00"
+            />
+          </Col>
+
+        </Row>
+      </Box>
 
       {/* Filters */}
       <Box sx={{ my: 3 }}>
         <Row gutter={[16, 16]} align="middle">
-          <Col xs={24} md={10}>
-           <TextField
-  fullWidth
-  size="small"
-  placeholder="Search Section"
-  value={searchText}
-  onChange={(e) => setSearchText(e.target.value)}
-  InputProps={{
-    startAdornment: (
-      <InputAdornment position="start">
-        <Search />
-      </InputAdornment>
-    )
-  }}
-/>
+          <Col xs={24} md={9}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search Section"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                )
+              }}
+            />
           </Col>
 
-          <Col xs={24} md={6}>
-           <TextField
-  select
-  fullWidth
-  size="small"
-  value={classFilter}
-  onChange={(e) => setClassFilter(e.target.value)}
->
-  <MenuItem value="all">All Classes</MenuItem>
-  <MenuItem value="fy bca">FY BCA</MenuItem>
-  <MenuItem value="sy bca">SY BCA</MenuItem>
-</TextField>
+          <Col xs={24} md={5}>
+            <TextField
+              select
+              fullWidth
+              label="Filter by Class"
+              size="small"
+              value={classFilter}
+              onChange={(e) => setClassFilter(e.target.value)}
+            >
+              {classOptions.map((className) => (
+                <MenuItem key={className} value={className}>
+                  {className}
+                </MenuItem>
+              ))}
+            </TextField>
           </Col>
 
-          <Col xs={24} md={8}>
+          <Col xs={24} md={5}>
+            <TextField
+              select
+              fullWidth
+              label="Filter by Section"
+              size="small"
+              value={sectionFilter}
+              onChange={(e) => setSectionFilter(e.target.value)}
+            >
+              {sectionOptions.map((sectionName) => (
+                <MenuItem key={sectionName} value={sectionName}>
+                  {sectionName}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Col>
+
+          <Col xs={24} md={5}>
             <Box
               sx={{
                 height: "100%",
@@ -418,7 +503,7 @@ const handleDeleteClick = (row) => {
         <Box sx={{ overflowX: "auto" }}>
           <DataGrid
             apiRef={apiRef}
-           rows={filteredRows}
+            rows={filteredRows}
             columns={columns}
             autoHeight
             rowHeight={72}
@@ -434,40 +519,40 @@ const handleDeleteClick = (row) => {
 
 
       <AddSectionModal
-  open={openModal}
-  onCancel={handleCloseModal}
-  onSubmit={handleAddSection}
-  mode={modalMode}
-  initialValues={selectedRow}
-/>
+        open={openModal}
+        onCancel={handleCloseModal}
+        onSubmit={handleAddSection}
+        mode={modalMode}
+        initialValues={selectedRow}
+      />
 
-<Modal
-  open={deleteModalOpen}
-  onCancel={handleCancelDelete}
-  onOk={handleConfirmDelete}
-  okText="Delete"
-  cancelText="Cancel"
-  centered
-  okButtonProps={{
-    danger: true,
-    style: {
-      background: "linear-gradient(45deg,#ff4d4f,#ff7875)",
-      border: "none"
-    }
-  }}
-  bodyStyle={{ padding: "20px 10px" }}
->
-  <Box textAlign="center">
-    <Typography variant="h6" sx={{ mb: 1 }}>
-      Delete Section
-    </Typography>
+      <Modal
+        open={deleteModalOpen}
+        onCancel={handleCancelDelete}
+        onOk={handleConfirmDelete}
+        okText="Delete"
+        cancelText="Cancel"
+        centered
+        okButtonProps={{
+          danger: true,
+          style: {
+            background: "linear-gradient(45deg,#ff4d4f,#ff7875)",
+            border: "none"
+          }
+        }}
+        bodyStyle={{ padding: "20px 10px" }}
+      >
+        <Box textAlign="center">
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Delete Section
+          </Typography>
 
-    <Typography color="text.secondary">
-      Are you sure you want to delete{" "}
-      <b>{rowToDelete?.sectionName}</b> section?
-    </Typography>
-  </Box>
-</Modal>
+          <Typography color="text.secondary">
+            Are you sure you want to delete{" "}
+            <b>{rowToDelete?.sectionName}</b> section?
+          </Typography>
+        </Box>
+      </Modal>
     </Box>
   );
 }

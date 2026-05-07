@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 import { DataGrid } from "@mui/x-data-grid";
-import { Row, Col, Grid as AntGrid, Empty , DatePicker } from "antd";
+import { Card, Row, Col, Grid as AntGrid, Empty, DatePicker } from "antd";
 import { Autocomplete } from "@mui/material";
 
 import {
@@ -55,7 +55,7 @@ const rowsData = [
     section: "B",
     present: 20,
     absent: 5,
-      late: 0,
+    late: 0,
     percentage: 80,
     date: "2024-01-15",
   },
@@ -81,14 +81,14 @@ const rowsData = [
     percentage: 72,
     date: "2024-01-18",
   },
-   {
+  {
     id: 5,
     name: "Vikram Singh",
     class: "SY BCA",
     section: "A",
     present: 23,
     absent: 2,
-      late: 0,
+    late: 0,
     percentage: 92,
     date: "2024-01-11",
   },
@@ -151,30 +151,79 @@ const rowsData = [
 
 /* ================= Stat Card ================= */
 
-const StatCard = ({ label, value, icon, color }) => (
-   <Box
-    sx={{
+/* ================= Stat Card ================= */
+
+const StatCard = ({ icon, value, label, iconBg, iconColor }) => (
+  <Card
+    style={{
+      borderRadius: 16,
       border: "1px solid #E5E7EB",
-      borderRadius: 2,
-      px: 3,
-      py: 3 ,// 🔥 increase this instead of height
-      display: "flex",
-      alignItems: "center",
-      gap: 2,
-      background: "#fff",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+      height: "100%",
+    }}
+    bodyStyle={{
+      padding: "20px",
     }}
   >
-    <Box sx={{ color }}>{icon}</Box>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 2,
+        minHeight: 70,
+      }}
+    >
+      {/* ICON */}
+      <Box
+        sx={{
+          width: 58,
+          height: 58,
+          minWidth: 58,
+          borderRadius: "16px",
+          backgroundColor: iconBg,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: iconColor,
 
-    <Box>
-      <Typography variant="h6" fontWeight={600}>
-        {value}
-      </Typography>
-      <Typography fontSize={13} color="text.secondary">
-        {label}
-      </Typography>
+          "& svg": {
+            fontSize: 30,
+          },
+        }}
+      >
+        {icon}
+      </Box>
+
+      {/* CONTENT */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          variant="h5"
+          fontWeight={700}
+          sx={{
+            lineHeight: 1.1,
+          }}
+        >
+          {value}
+        </Typography>
+
+        <Typography
+          sx={{
+            color: "#6B7280",
+            fontSize: 14,
+            mt: 0.5,
+          }}
+        >
+          {label}
+        </Typography>
+      </Box>
     </Box>
-  </Box>
+  </Card>
 );
 
 /* ================= Main ================= */
@@ -187,108 +236,108 @@ const AttendanceReport = () => {
   const [sectionFilter, setSectionFilter] = useState("");
   const [dateRange, setDateRange] = useState([null, null]);
   const classOptions = ["FY BCA", "SY BCA"];
-const sectionOptions = ["A", "B"];
+  const sectionOptions = ["A", "B"];
 
-const handleExportExcel = () => {
-  if (filteredRows.length === 0) return;
+  const handleExportExcel = () => {
+    if (filteredRows.length === 0) return;
 
-  const fromDate = dayjs(dateRange[0]).format("DD-MM-YYYY");
-  const toDate = dayjs(dateRange[1]).format("DD-MM-YYYY");
+    const fromDate = dayjs(dateRange[0]).format("DD-MM-YYYY");
+    const toDate = dayjs(dateRange[1]).format("DD-MM-YYYY");
 
-  const exportData = filteredRows.map((row, index) => ({
-    "Sr No": index + 1,
-    Name: row.name,
-    Class: row.class,
-    Section: row.section,
-    Present: row.present,
-    Absent: row.absent,
-    Late: row.late,
-    "Attendance %": row.percentage,
-    Date: row.date,
-  }));
+    const exportData = filteredRows.map((row, index) => ({
+      "Sr No": index + 1,
+      Name: row.name,
+      Class: row.class,
+      Section: row.section,
+      Present: row.present,
+      Absent: row.absent,
+      Late: row.late,
+      "Attendance %": row.percentage,
+      Date: row.date,
+    }));
 
-  // 🔥 Create worksheet with top header rows
-  const worksheet = XLSX.utils.aoa_to_sheet([
-    ["Attendance Report"],
-    [],
-    ["Class:", classFilter],
-    ["Section:", sectionFilter],
-    ["Date:", `${fromDate} to ${toDate}`],
-    [],
-  ]);
+    // 🔥 Create worksheet with top header rows
+    const worksheet = XLSX.utils.aoa_to_sheet([
+      ["Attendance Report"],
+      [],
+      ["Class:", classFilter],
+      ["Section:", sectionFilter],
+      ["Date:", `${fromDate} to ${toDate}`],
+      [],
+    ]);
 
-  // 🔥 Add table after header (start from row 7)
-  XLSX.utils.sheet_add_json(worksheet, exportData, {
-    origin: "A7",
-    skipHeader: false,
-  });
+    // 🔥 Add table after header (start from row 7)
+    XLSX.utils.sheet_add_json(worksheet, exportData, {
+      origin: "A7",
+      skipHeader: false,
+    });
 
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
 
-  const excelBuffer = XLSX.write(workbook, {
-    bookType: "xlsx",
-    type: "array",
-  });
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
 
-  const file = new Blob([excelBuffer], {
-    type: "application/octet-stream",
-  });
+    const file = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
 
-  saveAs(file, "attendance_report.xlsx");
-};
+    saveAs(file, "attendance_report.xlsx");
+  };
 
-const handleExportPDF = () => {
-  if (filteredRows.length === 0) return;
+  const handleExportPDF = () => {
+    if (filteredRows.length === 0) return;
 
-  const doc = new jsPDF();
+    const doc = new jsPDF();
 
-  const fromDate = dayjs(dateRange[0]).format("DD-MM-YYYY");
-  const toDate = dayjs(dateRange[1]).format("DD-MM-YYYY");
+    const fromDate = dayjs(dateRange[0]).format("DD-MM-YYYY");
+    const toDate = dayjs(dateRange[1]).format("DD-MM-YYYY");
 
-  const tableColumn = [
-    "Sr No",
-    "Name",
-    "Class",
-    "Section",
-    "Present",
-    "Absent",
-    "Late",
-    "Attendance %",
-    "Date",
-  ];
+    const tableColumn = [
+      "Sr No",
+      "Name",
+      "Class",
+      "Section",
+      "Present",
+      "Absent",
+      "Late",
+      "Attendance %",
+      "Date",
+    ];
 
-  const tableRows = filteredRows.map((row, index) => [
-    index + 1,
-    row.name,
-    row.class,
-    row.section,
-    row.present,
-    row.absent,
-    row.late,
-    `${row.percentage}%`,
-    row.date,
-  ]);
+    const tableRows = filteredRows.map((row, index) => [
+      index + 1,
+      row.name,
+      row.class,
+      row.section,
+      row.present,
+      row.absent,
+      row.late,
+      `${row.percentage}%`,
+      row.date,
+    ]);
 
-  // 🔥 Header Title
-  doc.setFontSize(14);
-  doc.text("Attendance Report", 14, 15);
+    // 🔥 Header Title
+    doc.setFontSize(14);
+    doc.text("Attendance Report", 14, 15);
 
-  // 🔥 Filter Info
-  doc.setFontSize(10);
-  doc.text(`Class: ${classFilter}`, 14, 25);
-  doc.text(`Section: ${sectionFilter}`, 14, 31);
-  doc.text(`Date: ${fromDate} to ${toDate}`, 14, 37);
+    // 🔥 Filter Info
+    doc.setFontSize(10);
+    doc.text(`Class: ${classFilter}`, 14, 25);
+    doc.text(`Section: ${sectionFilter}`, 14, 31);
+    doc.text(`Date: ${fromDate} to ${toDate}`, 14, 37);
 
-  // 🔥 Table
-  autoTable(doc, {
-    head: [tableColumn],
-    body: tableRows,
-    startY: 45,
-  });
+    // 🔥 Table
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 45,
+    });
 
-  doc.save("attendance_report.pdf");
-};
+    doc.save("attendance_report.pdf");
+  };
 
   /* ================= Columns ================= */
 
@@ -330,19 +379,19 @@ const handleExportPDF = () => {
       ),
     },
     {
-  field: "late",
-  headerName: "Late",
-  flex: 1,
-  renderCell: (params) => (
-    <Chip
-      label={params.value}
-      sx={{
-        background: "#FFF8E1",
-        color: "#F57C00",
-      }}
-    />
-  ),
-},
+      field: "late",
+      headerName: "Late",
+      flex: 1,
+      renderCell: (params) => (
+        <Chip
+          label={params.value}
+          sx={{
+            background: "#FFF8E1",
+            color: "#F57C00",
+          }}
+        />
+      ),
+    },
     {
       field: "percentage",
       headerName: "Attendance %",
@@ -392,9 +441,9 @@ const handleExportPDF = () => {
   const avgAttendance =
     filteredRows.length > 0
       ? Math.round(
-          filteredRows.reduce((acc, r) => acc + r.percentage, 0) /
-            filteredRows.length
-        )
+        filteredRows.reduce((acc, r) => acc + r.percentage, 0) /
+        filteredRows.length
+      )
       : 0;
 
   const avgAbsent = 100 - avgAttendance;
@@ -410,217 +459,225 @@ const handleExportPDF = () => {
       }}
     >
       {/* HEADER */}
-     <Box
-  sx={{
-    mb: 3,
-    display: "flex",
-    justifyContent: "space-between",
-  }}
->
-  <Box>
-    <Typography variant="h5" fontWeight={600}>
-      Attendance Report
-    </Typography>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box>
+          <Typography variant="h5" fontWeight={600}>
+            Attendance Report
+          </Typography>
 
-    <Typography color="text.secondary" fontSize={14}>
-      Student attendance overview
-    </Typography>
-  </Box>
-</Box>
+          <Typography color="text.secondary" fontSize={14}>
+            Student attendance overview
+          </Typography>
+        </Box>
+      </Box>
 
       {/* FILTER ROW */}
       <Box sx={{ mb: 3 }}>
         <Row gutter={[16, 16]}>
-         <Col xs={24} md={5}>
-  <Autocomplete
-    options={classOptions}
-    value={classFilter || null}
-    onChange={(e, newValue) => setClassFilter(newValue || "")}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Class"
-        size="small"
-        fullWidth
-      />
-    )}
-  />
-</Col>
-
-       <Col xs={24} md={5}>
-  <Autocomplete
-    options={sectionOptions}
-    value={sectionFilter || null}
-    onChange={(e, newValue) => setSectionFilter(newValue || "")}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Section"
-        size="small"
-        fullWidth
-      />
-    )}
-  />
-</Col>
-
-          <Col xs={24} md={6}>
-          <RangePicker
-  style={{
-    width: "100%",
-    height: 40, // ✅ match MUI small TextField
-    display: "flex",
-    alignItems: "center",
-  }}
-  value={dateRange}
-  onChange={(dates) => {
-    setDateRange(dates || [null, null]);
-  }}
-  format="DD-MM-YYYY"
-  allowClear
-/>
+          <Col xs={24} md={5}>
+            <Autocomplete
+              options={classOptions}
+              value={classFilter || null}
+              onChange={(e, newValue) => setClassFilter(newValue || "")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Class"
+                  size="small"
+                  fullWidth
+                />
+              )}
+            />
           </Col>
 
-         
+          <Col xs={24} md={5}>
+            <Autocomplete
+              options={sectionOptions}
+              value={sectionFilter || null}
+              onChange={(e, newValue) => setSectionFilter(newValue || "")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Section"
+                  size="small"
+                  fullWidth
+                />
+              )}
+            />
+          </Col>
+
+          <Col xs={24} md={6}>
+            <RangePicker
+              style={{
+                width: "100%",
+                height: 40, // ✅ match MUI small TextField
+                display: "flex",
+                alignItems: "center",
+              }}
+              value={dateRange}
+              onChange={(dates) => {
+                setDateRange(dates || [null, null]);
+              }}
+              format="DD-MM-YYYY"
+              allowClear
+            />
+          </Col>
+
+
         </Row>
       </Box>
 
       {/* SHOW ONLY AFTER FILTER */}
-    {isFilterApplied ? (
-  <>
-    {/* STATS */}
-    <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
-  <Col xs={24} sm={12} md={6}>
-    <StatCard
-      icon={<Groups />}
-      value={totalStudents}
-      label="Total Students"
-      color="#1976d2"
-    />
-  </Col>
+      {isFilterApplied ? (
+        <>
 
-  <Col xs={24} sm={12} md={6}>
-    <StatCard
-      icon={<CheckCircle />}
-      value={`${avgAttendance}%`}
-      label="Avg Attendance"
-      color="green"
-    />
-  </Col>
+          {/* STATS */}
+          <Box sx={{ mb: 4 }}>
+            <Row gutter={[16, 16]}>
 
-  <Col xs={24} sm={12} md={6}>
-    <StatCard
-      icon={<Cancel />}
-      value={`${avgAbsent}%`}
-      label="Avg Absence"
-      color="red"
-    />
-  </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <StatCard
+                  icon={<Groups />}
+                  value={totalStudents}
+                  label="Total Students"
+                  iconBg="#E3F2FD"
+                  iconColor="#1565C0"
+                />
+              </Col>
 
-  <Col xs={24} sm={12} md={6}>
-    <StatCard
-      icon={<AccessTime />}
-      value={totalLate}
-      label="Total Late"
-      color="#f57c00"
-    />
-  </Col>
-</Row>
+              <Col xs={24} sm={12} lg={6}>
+                <StatCard
+                  icon={<CheckCircle />}
+                  value={`${avgAttendance}%`}
+                  label="Avg Attendance"
+                  iconBg="#E8F5E9"
+                  iconColor="#2E7D32"
+                />
+              </Col>
 
-    {/* TABLE */}
-<Paper sx={{ p: 2 }}>
-  
-  {/* HEADER (NOT SCROLLABLE) */}
-  <Box
-    sx={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      mb: 2,
-      flexDirection: screens.xs ? "column" : "row",
-      gap: 1
-    }}
-  >
-    <Typography fontWeight={600}>
-      Student Attendance
-    </Typography>
+              <Col xs={24} sm={12} lg={6}>
+                <StatCard
+                  icon={<Cancel />}
+                  value={`${avgAbsent}%`}
+                  label="Avg Absence"
+                  iconBg="#FFEBEE"
+                  iconColor="#C62828"
+                />
+              </Col>
 
-    <Box
-      sx={{
-        display: "flex",
-        gap: 1,
-        width: screens.xs ? "100%" : "auto",
-        flexDirection: screens.xs ? "column" : "row"
-      }}
-    >
-      {/* SEARCH */}
-      <TextField
-        size="small"
-        placeholder="Search student"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        fullWidth={screens.xs}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search />
-            </InputAdornment>
-          ),
-        }}
-      />
+              <Col xs={24} sm={12} lg={6}>
+                <StatCard
+                  icon={<AccessTime />}
+                  value={totalLate}
+                  label="Total Late"
+                  iconBg="#FFF3E0"
+                  iconColor="#EF6C00"
+                />
+              </Col>
 
-      {/* BUTTONS */}
-      <Button
-        variant="outlined"
-        startIcon={<Download />}
-        size="small"
-        fullWidth={screens.xs}
-        onClick={handleExportExcel}
-      >
-        Excel
-      </Button>
+            </Row>
+          </Box>
+          {/* TABLE */}
+          <Paper sx={{ p: 2 }}>
 
-      <Button
-        variant="outlined"
-        startIcon={<Download />}
-        size="small"
-        fullWidth={screens.xs}
-        onClick={handleExportPDF}
-      >
-        PDF
-      </Button>
-    </Box>
-  </Box>
+            {/* HEADER (NOT SCROLLABLE) */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+                flexDirection: screens.xs ? "column" : "row",
+                gap: 1
+              }}
+            >
+              <Typography fontWeight={600}>
+                Student Attendance
+              </Typography>
 
-  {/* TABLE SCROLL ONLY */}
-  <Box sx={{ overflowX: "auto" }}>
-    <DataGrid
-      rows={filteredRows}
-      columns={columns}
-      autoHeight
-      pageSizeOptions={[5, 10, 20, 50]}
-      rowHeight={72}
-      sx={{
-        minWidth: 900,
-        border: 0
-      }}
-    />
-  </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                  width: screens.xs ? "100%" : "auto",
+                  flexDirection: screens.xs ? "column" : "row"
+                }}
+              >
+                {/* SEARCH */}
+                <TextField
+                  size="small"
+                  placeholder="Search student"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  fullWidth={screens.xs}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
 
-</Paper>
-  </>
-) : (
-  <Paper
-    sx={{
-      py: 8,
-      textAlign: "center",
-      border: "1px dashed #d9d9d9",
-    }}
-  >
-    <Empty
-      description="Please select Class, Section and Date to view attendance"
-    />
-  </Paper>
-)}
+                {/* BUTTONS */}
+                <Button
+                  variant="outlined"
+                  startIcon={<Download />}
+                  size="small"
+                  fullWidth={screens.xs}
+                  onClick={handleExportExcel}
+                >
+                  Excel
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  startIcon={<Download />}
+                  size="small"
+                  fullWidth={screens.xs}
+                  onClick={handleExportPDF}
+                >
+                  PDF
+                </Button>
+              </Box>
+            </Box>
+
+            {/* TABLE SCROLL ONLY */}
+            <Box sx={{ overflowX: "auto" }}>
+              <DataGrid
+                rows={filteredRows}
+                columns={columns}
+                autoHeight
+                pageSizeOptions={[5, 10, 20, 50]}
+                rowHeight={72}
+                sx={{
+                  minWidth: 900,
+                  border: 0
+                }}
+              />
+            </Box>
+
+          </Paper>
+        </>
+      ) : (
+        <Paper
+          sx={{
+            py: 8,
+            textAlign: "center",
+            border: "1px dashed #d9d9d9",
+          }}
+        >
+          <Empty
+            description="Please select Class, Section and Date to view attendance"
+          />
+        </Paper>
+      )}
     </Box>
   );
 };

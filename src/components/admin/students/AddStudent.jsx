@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -10,26 +10,95 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Stack,
   useMediaQuery,
   useTheme
 } from "@mui/material";
 
-import { Row, Col, Grid as AntGrid, Upload } from "antd";
+import { Row, Col, Grid as AntGrid, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import SaveIcon from "@mui/icons-material/Save";
 
+import {
+  useNavigate,
+  useParams
+} from "react-router-dom";
+
+import {
+  addStudentToStorage,
+  getStoredStudents,
+  saveStudents
+} from "./studentStorage";
+
 const { useBreakpoint } = AntGrid;
 
-const steps = ["Personal Info", "Guardian Info", "Academic Info"];
+const steps = [
+  "Personal Info",
+  "Guardian Info",
+  "Academic Info"
+];
 
-const AddStudent = () => {
+const classOptions = [
+  "FY BCA",
+  "SY BCA",
+  "TY BCA",
+  "FY BSc"
+];
+
+const sectionOptions = ["A", "B", "C", "D"];
+const bloodGroupOptions = [
+  "A+",
+  "A-",
+  "B+",
+  "B-",
+  "AB+",
+  "AB-",
+  "O+",
+  "O-"
+];
+
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
+const DUMMY_STUDENT_FALLBACK = {
+  dob: "2005-06-15",
+  bloodGroup: "B+",
+  fatherName: "Rajesh Sharma",
+  motherName: "Sunita Sharma",
+  phone: "9876543210",
+  email: "student@example.com",
+  address: "123 College Road, Pune",
+  admissionDate: "2024-06-01",
+  discountType: "none",
+  photo:
+    "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='180' viewBox='0 0 300 180'><rect width='300' height='180' fill='%23e3f2fd'/><circle cx='150' cy='68' r='28' fill='%2390caf9'/><path d='M95 150c10-28 36-42 55-42s45 14 55 42' fill='%2390caf9'/><text x='150' y='168' text-anchor='middle' font-family='Arial' font-size='14' fill='%231565c0'>Student Photo</text></svg>"
+};
+
+const AddStudent = ({ mode = "add" }) => {
   const screens = useBreakpoint();
+
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const isMobile = useMediaQuery(
+    theme.breakpoints.down("sm")
+  );
+
+  const navigate = useNavigate();
+
+  const { id } = useParams();
+
+  const isView = mode === "view";
+  const isEdit = mode === "edit";
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -48,11 +117,287 @@ const AddStudent = () => {
     class: "",
     section: "",
     admissionDate: "",
-    discountType: ""
+    discountType: "",
+    photo: ""
   });
 
-  const handleNext = () => setActiveStep((prev) => prev + 1);
-  const handleBack = () => setActiveStep((prev) => prev - 1);
+  /* ================= LOAD STUDENT ================= */
+
+  useEffect(() => {
+    if (!id) return;
+
+    const students = getStoredStudents();
+
+    const existingStudent = students.find(
+      (student) =>
+        String(student.id) === String(id)
+    );
+
+    if (!existingStudent) return;
+
+    const fullName =
+      existingStudent.name?.split(" ") || [];
+
+    const mergedStudent = {
+      ...DUMMY_STUDENT_FALLBACK,
+      ...existingStudent
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      firstName: fullName[0] || "",
+      lastName: fullName.slice(1).join(" "),
+      dob: mergedStudent.dob || "",
+      bloodGroup: mergedStudent.bloodGroup || "",
+      fatherName: mergedStudent.fatherName || "",
+      motherName: mergedStudent.motherName || "",
+      admissionNumber:
+        mergedStudent.rollNo || "",
+      class: mergedStudent.class || "",
+      section: mergedStudent.section || "",
+      gender: mergedStudent.gender || "",
+      phone: mergedStudent.phone || "",
+      email: mergedStudent.email || "",
+      address: mergedStudent.address || "",
+      admissionDate: mergedStudent.admissionDate || "",
+      discountType: mergedStudent.discountType || "",
+      photo: mergedStudent.photo || ""
+    }));
+  }, [id]);
+
+  /* ================= HANDLE CHANGE ================= */
+
+  const handleChange =
+    (field) => (event) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: event.target.value
+      }));
+    };
+
+  const handlePhotoUpload = async (file) => {
+    try {
+      const base64File = await fileToBase64(file);
+
+      setFormData((prev) => ({
+        ...prev,
+        photo: base64File
+      }));
+    } catch {
+      message.error("Unable to upload photo.");
+    }
+
+    return false;
+  };
+
+  /* ================= VALIDATION ================= */
+
+  const validateStep = () => {
+    if (activeStep === 0) {
+      return (
+        formData.firstName &&
+        formData.lastName &&
+        formData.dob &&
+        formData.gender &&
+        formData.bloodGroup
+      );
+    }
+
+    if (activeStep === 1) {
+      return (
+        formData.fatherName &&
+        formData.motherName &&
+        formData.phone &&
+        formData.email &&
+        formData.address
+      );
+    }
+
+    return (
+      formData.admissionNumber &&
+      formData.class &&
+      formData.section &&
+      formData.admissionDate &&
+      formData.discountType
+    );
+  };
+
+  /* ================= NEXT ================= */
+
+  const handleNext = () => {
+    if (isView) {
+      setActiveStep((prev) => prev + 1);
+      return;
+    }
+
+    if (!validateStep()) {
+      message.warning(
+        "Please fill all fields before next step."
+      );
+
+      return;
+    }
+
+    setActiveStep((prev) => prev + 1);
+  };
+
+  /* ================= BACK ================= */
+
+  const handleBack = () => {
+    setActiveStep((prev) => prev - 1);
+  };
+
+  /* ================= SAVE / UPDATE ================= */
+
+  const handleSaveStudent = () => {
+    if (!validateStep()) {
+      message.warning(
+        "Please fill all fields before saving."
+      );
+
+      return;
+    }
+
+    const currentStudents =
+      getStoredStudents();
+
+    /* ===== EDIT ===== */
+
+    if (isEdit) {
+      const updatedStudents =
+        currentStudents.map((student) =>
+          String(student.id) === String(id)
+            ? {
+              ...student,
+
+              name:
+                `${formData.firstName} ${formData.lastName}`.trim(),
+
+              rollNo:
+                formData.admissionNumber,
+
+              class: formData.class,
+
+              section:
+                formData.section,
+
+              gender:
+                formData.gender,
+
+              phone:
+                formData.phone,
+
+              dob: formData.dob,
+
+              bloodGroup:
+                formData.bloodGroup,
+
+              fatherName:
+                formData.fatherName,
+
+              motherName:
+                formData.motherName,
+
+              email:
+                formData.email,
+
+              address:
+                formData.address,
+
+              admissionDate:
+                formData.admissionDate,
+
+              discountType:
+                formData.discountType,
+
+              photo:
+                formData.photo
+            }
+            : student
+        );
+
+      localStorage.setItem(
+        "students",
+        JSON.stringify(updatedStudents)
+      );
+      saveStudents(updatedStudents);
+
+      message.success(
+        "Student updated successfully."
+      );
+    }
+
+    /* ===== ADD ===== */
+
+    else {
+      const nextId =
+        currentStudents.length > 0
+          ? Math.max(
+            ...currentStudents.map(
+              (student) =>
+                Number(student.id) || 0
+            )
+          ) + 1
+          : 1;
+
+      const student = {
+        id: nextId,
+
+        name:
+          `${formData.firstName} ${formData.lastName}`.trim(),
+
+        rollNo:
+          formData.admissionNumber,
+
+        class: formData.class,
+
+        section:
+          formData.section,
+
+        gender:
+          formData.gender,
+
+        phone:
+          formData.phone,
+
+        dob: formData.dob,
+
+        bloodGroup:
+          formData.bloodGroup,
+
+        fatherName:
+          formData.fatherName,
+
+        motherName:
+          formData.motherName,
+
+        email:
+          formData.email,
+
+        address:
+          formData.address,
+
+        admissionDate:
+          formData.admissionDate,
+
+        discountType:
+          formData.discountType,
+
+        photo:
+          formData.photo,
+
+        status: "Active"
+      };
+
+      addStudentToStorage(student);
+
+      message.success(
+        "Student added successfully."
+      );
+    }
+
+    navigate("/students");
+  };
 
   return (
     <Box
@@ -62,15 +407,24 @@ const AddStudent = () => {
         mx: "auto",
         px: screens.xs ? 0 : 2,
         py: screens.xs ? 3 : 2,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          theme.palette.background.default,
         minHeight: "100vh"
       }}
     >
       <Container maxWidth="lg">
 
-        {/* HEADER */}
-        <Typography variant="h5" color="text.primary">
-          Add New Student
+        {/* ================= HEADER ================= */}
+
+        <Typography
+          variant="h5"
+          color="text.primary"
+        >
+          {isView
+            ? "View Student"
+            : isEdit
+              ? "Edit Student"
+              : "Add New Student"}
         </Typography>
 
         <Typography
@@ -78,144 +432,270 @@ const AddStudent = () => {
           color="text.secondary"
           mb={3}
         >
-          Fill in the student admission details
+          Manage student details
         </Typography>
 
-        {/* STEPPER */}
+        {/* ================= STEPPER ================= */}
+
         <Stepper
           activeStep={activeStep}
           alternativeLabel={!isMobile}
-          orientation={isMobile ? "vertical" : "horizontal"}
+          orientation={
+            isMobile
+              ? "vertical"
+              : "horizontal"
+          }
           sx={{
             mb: 4,
             mt: 4,
 
-            "& .MuiStepIcon-root.Mui-active": {
-              color: theme.palette.primary.main
+            "& .MuiStepIcon-root.Mui-active":
+            {
+              color:
+                theme.palette.primary.main
             },
-            "& .MuiStepIcon-root.Mui-completed": {
-              color: theme.palette.primary.main
+
+            "& .MuiStepIcon-root.Mui-completed":
+            {
+              color:
+                theme.palette.primary.main
             },
-            "& .MuiStepLabel-label.Mui-active": {
-              color: theme.palette.primary.main,
+
+            "& .MuiStepLabel-label.Mui-active":
+            {
+              color:
+                theme.palette.primary.main,
               fontWeight: 600
-            },
-            "& .MuiStepLabel-label.Mui-completed": {
-              color: theme.palette.primary.main
             }
           }}
         >
           {steps.map((label) => (
             <Step key={label}>
-              <StepLabel>{label}</StepLabel>
+              <StepLabel>
+                {label}
+              </StepLabel>
             </Step>
           ))}
         </Stepper>
 
-        {/* FORM CARD */}
+        {/* ================= FORM CARD ================= */}
+
         <Paper
           sx={{
-            p: { xs: 2, sm: 3, md: 4 },
+            p: {
+              xs: 2,
+              sm: 3,
+              md: 4
+            },
+
             borderRadius: 3,
-            border: "1px solid #e5e7eb",
-            backgroundColor: theme.palette.background.paper
+
+            border:
+              "1px solid #e5e7eb"
           }}
         >
 
           {/* ================= STEP 1 ================= */}
+
           {activeStep === 0 && (
             <>
-              <Typography fontWeight={600} mb={3}>
+              <Typography
+                fontWeight={600}
+                mb={3}
+              >
                 Personal Info
               </Typography>
 
               <Row gutter={[16, 16]}>
 
                 <Col xs={24} sm={12}>
-                  <TextField fullWidth label="First Name" />
+                  <TextField
+                    fullWidth
+                    label="First Name"
+                    value={
+                      formData.firstName
+                    }
+                    onChange={handleChange(
+                      "firstName"
+                    )}
+                    disabled={isView}
+                  />
                 </Col>
 
                 <Col xs={24} sm={12}>
-                  <TextField fullWidth label="Last Name" />
+                  <TextField
+                    fullWidth
+                    label="Last Name"
+                    value={
+                      formData.lastName
+                    }
+                    onChange={handleChange(
+                      "lastName"
+                    )}
+                    disabled={isView}
+                  />
                 </Col>
 
                 <Col xs={24} sm={12}>
                   <DatePicker
                     label="Date of Birth"
-                    value={formData.dob ? dayjs(formData.dob) : null}
+                    value={
+                      formData.dob
+                        ? dayjs(
+                          formData.dob
+                        )
+                        : null
+                    }
+                    disabled={isView}
                     onChange={(val) =>
                       setFormData({
                         ...formData,
-                        dob: val?.format("YYYY-MM-DD")
+                        dob: val?.format(
+                          "YYYY-MM-DD"
+                        )
                       })
                     }
                     slotProps={{
                       textField: {
-                        fullWidth: true,
-                        placeholder: "MM/DD/YYYY"
+                        fullWidth: true
                       }
                     }}
                   />
                 </Col>
 
                 <Col xs={24} sm={12}>
-                  <TextField select fullWidth label="Gender">
-                    <MenuItem value="male">Male</MenuItem>
-                    <MenuItem value="female">Female</MenuItem>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Gender"
+                    value={
+                      formData.gender
+                    }
+                    onChange={handleChange(
+                      "gender"
+                    )}
+                    disabled={isView}
+                  >
+                    <MenuItem value="Male">
+                      Male
+                    </MenuItem>
+
+                    <MenuItem value="Female">
+                      Female
+                    </MenuItem>
                   </TextField>
                 </Col>
 
-                <Col xs={24} sm={12}>
-                  <TextField select fullWidth label="Blood Group">
-                    <MenuItem value="A+">A+</MenuItem>
-                    <MenuItem value="B+">B+</MenuItem>
+                <Col xs={24}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Blood Group"
+                    value={
+                      formData.bloodGroup
+                    }
+                    onChange={handleChange(
+                      "bloodGroup"
+                    )}
+                    disabled={isView}
+                  >
+                    {bloodGroupOptions.map((group) => (
+                      <MenuItem key={group} value={group}>
+                        {group}
+                      </MenuItem>
+                    ))}
                   </TextField>
                 </Col>
 
-                {/* Upload */}
                 <Col xs={24}>
                   <Upload
                     showUploadList={false}
-                    beforeUpload={() => false}
-                    style={{ width: "100%" }}
+                    beforeUpload={handlePhotoUpload}
+                    disabled={isView}
                   >
                     <Box
                       sx={{
                         width: "100%",
-                        border: "2px dashed #d1d5db",
-                        borderRadius: 3,
-                        height: 150,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                        background: "#fafafa",
-                        cursor: "pointer",
-                        transition: "0.3s",
+                        border:
+                          "2px dashed #d1d5db",
 
-                        "&:hover": {
-                          borderColor: theme.palette.primary.main,
-                          background: "#f5f7ff"
-                        }
+                        borderRadius: 3,
+
+                        minHeight: 150,
+
+                        display: "flex",
+
+                        alignItems:
+                          "center",
+
+                        justifyContent:
+                          "center",
+
+                        flexDirection:
+                          "column",
+
+                        background:
+                          "#fafafa",
+
+                        cursor: isView
+                          ? "default"
+                          : "pointer",
+
+                        overflow: "hidden",
+                        p: formData.photo ? 2 : 0
                       }}
                     >
-                      <UploadOutlined
-                        style={{
-                          fontSize: 28,
-                          color: theme.palette.primary.main
-                        }}
-                      />
+                      {formData.photo ? (
+                        <Stack
+                          spacing={2}
+                          alignItems="center"
+                          sx={{ width: "100%" }}
+                        >
+                          <Box
+                            component="img"
+                            src={formData.photo}
+                            alt="Student"
+                            sx={{
+                              width: "100%",
+                              maxWidth: 220,
+                              height: 160,
+                              objectFit: "cover",
+                              borderRadius: 2,
+                              border: "1px solid #d1d5db"
+                            }}
+                          />
 
-                      <Typography fontWeight={500} mt={1}>
-                        Upload Student Photo
-                      </Typography>
+                          {!isView && (
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              startIcon={<UploadOutlined />}
+                            >
+                              Change Photo
+                            </Button>
+                          )}
+                        </Stack>
+                      ) : (
+                        <>
+                          <UploadOutlined
+                            style={{
+                              fontSize: 28,
+                              color:
+                                theme.palette
+                                  .primary.main
+                            }}
+                          />
 
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        Click or drag file to upload
-                      </Typography>
+                          <Typography
+                            fontWeight={500}
+                            mt={1}
+                          >
+                            {isEdit
+                              ? "Upload Or Change Photo"
+                              : "Upload Student Photo"}
+                          </Typography>
+                        </>
+                      )}
                     </Box>
                   </Upload>
                 </Col>
@@ -225,28 +705,72 @@ const AddStudent = () => {
           )}
 
           {/* ================= STEP 2 ================= */}
+
           {activeStep === 1 && (
             <>
-              <Typography fontWeight={600} mb={3}>
+              <Typography
+                fontWeight={600}
+                mb={3}
+              >
                 Guardian Info
               </Typography>
 
               <Row gutter={[16, 16]}>
 
                 <Col xs={24} sm={12}>
-                  <TextField fullWidth label="Father Name" />
+                  <TextField
+                    fullWidth
+                    label="Father Name"
+                    value={
+                      formData.fatherName
+                    }
+                    onChange={handleChange(
+                      "fatherName"
+                    )}
+                    disabled={isView}
+                  />
                 </Col>
 
                 <Col xs={24} sm={12}>
-                  <TextField fullWidth label="Mother Name" />
+                  <TextField
+                    fullWidth
+                    label="Mother Name"
+                    value={
+                      formData.motherName
+                    }
+                    onChange={handleChange(
+                      "motherName"
+                    )}
+                    disabled={isView}
+                  />
                 </Col>
 
                 <Col xs={24} sm={12}>
-                  <TextField fullWidth label="Phone" />
+                  <TextField
+                    fullWidth
+                    label="Phone"
+                    value={
+                      formData.phone
+                    }
+                    onChange={handleChange(
+                      "phone"
+                    )}
+                    disabled={isView}
+                  />
                 </Col>
 
                 <Col xs={24} sm={12}>
-                  <TextField fullWidth label="Email" />
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    value={
+                      formData.email
+                    }
+                    onChange={handleChange(
+                      "email"
+                    )}
+                    disabled={isView}
+                  />
                 </Col>
 
                 <Col xs={24}>
@@ -255,6 +779,13 @@ const AddStudent = () => {
                     multiline
                     rows={3}
                     label="Address"
+                    value={
+                      formData.address
+                    }
+                    onChange={handleChange(
+                      "address"
+                    )}
+                    disabled={isView}
                   />
                 </Col>
 
@@ -263,123 +794,232 @@ const AddStudent = () => {
           )}
 
           {/* ================= STEP 3 ================= */}
+
           {activeStep === 2 && (
             <>
-              <Typography fontWeight={600} mb={3}>
+              <Typography
+                fontWeight={600}
+                mb={3}
+              >
                 Academic Info
               </Typography>
 
               <Row gutter={[16, 16]}>
 
                 <Col xs={24} sm={12}>
-                  <TextField fullWidth label="Admission Number" />
+                  <TextField
+                    fullWidth
+                    label="Admission Number"
+                    value={
+                      formData.admissionNumber
+                    }
+                    onChange={handleChange(
+                      "admissionNumber"
+                    )}
+                    disabled={isView}
+                  />
                 </Col>
 
                 <Col xs={24} sm={12}>
-                  <TextField select fullWidth label="Class">
-                    {[1,2,3,4,5,6,7,8,9,10].map(c => (
-                      <MenuItem key={c} value={c}>
-                        Class {c}
-                      </MenuItem>
-                    ))}
+                  <TextField
+                    select
+                    fullWidth
+                    label="Class"
+                    value={
+                      formData.class
+                    }
+                    onChange={handleChange(
+                      "class"
+                    )}
+                    disabled={isView}
+                  >
+                    {classOptions.map(
+                      (className) => (
+                        <MenuItem
+                          key={className}
+                          value={
+                            className
+                          }
+                        >
+                          {className}
+                        </MenuItem>
+                      )
+                    )}
                   </TextField>
                 </Col>
 
                 <Col xs={24} sm={12}>
-                  <TextField select fullWidth label="Section">
-                    {["A","B","C","D"].map(sec => (
-                      <MenuItem key={sec} value={sec}>
-                        Section {sec}
-                      </MenuItem>
-                    ))}
+                  <TextField
+                    select
+                    fullWidth
+                    label="Section"
+                    value={
+                      formData.section
+                    }
+                    onChange={handleChange(
+                      "section"
+                    )}
+                    disabled={isView}
+                  >
+                    {sectionOptions.map(
+                      (sec) => (
+                        <MenuItem
+                          key={sec}
+                          value={sec}
+                        >
+                          Section {sec}
+                        </MenuItem>
+                      )
+                    )}
                   </TextField>
                 </Col>
 
                 <Col xs={24} sm={12}>
                   <DatePicker
                     label="Admission Date"
-                    value={formData.admissionDate ? dayjs(formData.admissionDate) : null}
+                    value={
+                      formData.admissionDate
+                        ? dayjs(
+                          formData.admissionDate
+                        )
+                        : null
+                    }
+                    disabled={isView}
                     onChange={(val) =>
                       setFormData({
                         ...formData,
-                        admissionDate: val?.format("YYYY-MM-DD")
+                        admissionDate:
+                          val?.format(
+                            "YYYY-MM-DD"
+                          )
                       })
                     }
                     slotProps={{
                       textField: {
-                        fullWidth: true,
-                        placeholder: "MM/DD/YYYY"
+                        fullWidth: true
                       }
                     }}
                   />
                 </Col>
 
-                <Col xs={24}>
-                  <TextField select fullWidth label="Discount Type">
-                    <MenuItem value="none">No Discount</MenuItem>
-                    <MenuItem value="sibling">Sibling</MenuItem>
-                    <MenuItem value="staff">Staff</MenuItem>
+                <Col xs={24} >
+                  <TextField
+                    select
+                    fullWidth
+                    label="Discount Type"
+                    value={
+                      formData.discountType
+                    }
+                    onChange={handleChange(
+                      "discountType"
+                    )}
+                    disabled={isView}
+                  >
+                    <MenuItem value="none">
+                      No Discount
+                    </MenuItem>
+
+                    <MenuItem value="sibling">
+                      Sibling
+                    </MenuItem>
+
+                    <MenuItem value="staff">
+                      Staff
+                    </MenuItem>
                   </TextField>
                 </Col>
 
               </Row>
             </>
-          )}
+          )}<br></br>
 
-          <br></br>
+          {/* ================= BUTTONS ================= */}
 
-          {/* BUTTONS */}
-        <Box
-  mt={4}
-  display="flex"
-  flexDirection={isMobile ? "column" : "row"}
-  alignItems="center"
-  gap={2}
->
-  {/* PREVIOUS BUTTON */}
-  <Box sx={{ flex: 1 }}>
-    <Button
-      fullWidth={isMobile}
-      disabled={activeStep === 0}
-      onClick={handleBack}
-      variant="outlined"
-      startIcon={<ArrowBackIcon />}
-    >
-      Previous
-    </Button>
-  </Box>
+          <Box
+            mt={4}
+            display="flex"
+            flexDirection={
+              isMobile
+                ? "column"
+                : "row"
+            }
+            alignItems="center"
+            gap={2}
+          >
 
-  {/* NEXT / SAVE BUTTON */}
-  <Box
-    sx={{
-      flex: 1,
-      display: "flex",
-      justifyContent: "flex-end"
-    }}
-  >
-    <Button
-      fullWidth={isMobile}
-      variant="contained"
-      onClick={handleNext}
-      endIcon={
-        activeStep === steps.length - 1 ? (
-          <SaveIcon />
-        ) : (
-          <ArrowForwardIcon />
-        )
-      }
-      sx={{
-        mt: isMobile ? 2 : 0,
-        px: 4,
-        marginTop: isMobile ? 2 : -5
-      }}
-    >
-      {activeStep === steps.length - 1
-        ? "Save Student"
-        : "Next"}
-    </Button>
-  </Box>
-</Box>
+            {/* PREVIOUS */}
+
+            <Box sx={{ flex: 1 }}>
+              <Button
+                fullWidth={isMobile}
+                disabled={
+                  activeStep === 0
+                }
+                onClick={handleBack}
+                variant="outlined"
+                startIcon={
+                  <ArrowBackIcon />
+                }
+              >
+                Previous
+              </Button>
+            </Box>
+
+            {/* NEXT / SAVE */}
+
+            <Box
+              sx={{
+                flex: 1,
+                display: "flex",
+                justifyContent:
+                  "flex-end"
+              }}
+            >
+              <Button
+                fullWidth={isMobile}
+                variant="contained"
+                onClick={
+                  isView
+                    ? activeStep ===
+                      steps.length - 1
+                      ? () =>
+                        navigate(
+                          "/students"
+                        )
+                      : handleNext
+                    : activeStep ===
+                      steps.length - 1
+                      ? handleSaveStudent
+                      : handleNext
+                }
+                endIcon={
+                  activeStep ===
+                    steps.length - 1 ? (
+                    <SaveIcon />
+                  ) : (
+                    <ArrowForwardIcon />
+                  )
+                }
+
+                sx={{
+                  mt: isMobile ? 2 : 0,
+                  px: 4,
+                  marginTop: isMobile ? 2 : -5
+                }}
+
+              >
+                {activeStep ===
+                  steps.length - 1
+                  ? isView
+                    ? "Close"
+                    : isEdit
+                      ? "Update Student"
+                      : "Save Student"
+                  : "Next"}
+              </Button>
+            </Box>
+
+          </Box>
 
         </Paper>
       </Container>

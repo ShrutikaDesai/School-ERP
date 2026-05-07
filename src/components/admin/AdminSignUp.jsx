@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import {
   Box,
   Paper,
@@ -20,12 +19,13 @@ import {
   LockOutlined,
   Visibility,
   VisibilityOff,
+  PersonOutlineOutlined,
 } from "@mui/icons-material";
 
 import GoogleIcon from "@mui/icons-material/Google";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
 
-const AdminLogin = () => {
+const AdminSignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -79,7 +79,7 @@ const AdminLogin = () => {
               mb: 1,
             }}
           >
-            Welcome Back
+            Create Account
           </Typography>
 
           <Typography
@@ -88,12 +88,45 @@ const AdminLogin = () => {
               fontSize: 18,
             }}
           >
-            Sign in to Bright Hill Academy ERP
+            Sign up to Bright Hill Academy ERP
           </Typography>
         </Box>
 
         {/* FORM */}
         <Stack spacing={3}>
+          {/* FULL NAME */}
+          <Box>
+            <Typography
+              sx={{
+                mb: 1,
+                fontWeight: 600,
+                color: "#334155",
+              }}
+            >
+              Full Name
+            </Typography>
+
+            <TextField
+              fullWidth
+              placeholder="Enter your full name"
+              size="medium"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonOutlineOutlined  sx={{ color: "#94A3B8" }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "18px",
+                  background: "#F8FAFC",
+                  height: 62,
+                },
+              }}
+            />
+          </Box>
+
           {/* EMAIL */}
           <Box>
             <Typography
@@ -199,11 +232,11 @@ const AdminLogin = () => {
                 cursor: "pointer",
               }}
             >
-              Forgot password?
+              Already have an account?
             </Typography>
           </Box>
 
-          {/* LOGIN BUTTON */}
+          {/* SIGN UP BUTTON */}
           <Button
             fullWidth
             variant="contained"
@@ -224,7 +257,7 @@ const AdminLogin = () => {
               },
             }}
           >
-            Sign In
+            Sign Up
           </Button>
         </Stack>
 
@@ -250,7 +283,7 @@ const AdminLogin = () => {
           <Button
             fullWidth
             variant="outlined"
-            startIcon={<GoogleIcon />}
+            startIcon={<GoogleIcon size={22} />}
             sx={{
               height: 56,
               borderRadius: "16px",
@@ -266,7 +299,12 @@ const AdminLogin = () => {
           <Button
             fullWidth
             variant="outlined"
-            startIcon={<MicrosoftIcon />}
+            startIcon={
+              <MicrosoftIcon
+                size={18}
+                color="#2563EB"
+              />
+            }
             sx={{
               height: 56,
               borderRadius: "16px",
@@ -293,15 +331,14 @@ const AdminLogin = () => {
               mb: 1,
             }}
           >
-            Don’t have an account?{" "}
+            Having trouble?{" "}
             <span
               style={{
                 color: "#4F46E5",
                 cursor: "pointer",
-                fontWeight: 600,
               }}
             >
-              Sign Up
+              Contact Administrator
             </span>
           </Typography>
 
@@ -319,4 +356,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default AdminSignUp;

@@ -9,6 +9,8 @@ import AttendanceReport from "./components/admin/attendance/AttendanceReport.jsx
 import Reports from "./components/admin/reports/Reports.jsx";
 import AddStudent from "./components/admin/students/AddStudent.jsx";
 import StudentLists from "./components/admin/students/StudentLists.jsx";
+import AdminSignUp from "./components/admin/AdminSignUp.jsx";
+import AdminLogin from "./components/admin/AdminLogin.jsx";
 
 
 function App() {
@@ -20,12 +22,17 @@ function App() {
           <Route path="/students" element={<StudentLists />} />
               {/* <Route path="/students" element={<StudentsPage />} /> */}
           <Route path="/add-student" element={<AddStudent />} />
+          <Route path="/students/:id/edit" element={<AddStudent mode="edit" />} />
+          <Route path="/students/:id/view" element={<AddStudent mode="view" />} />
           <Route path="/classes" element={<Classes />} />
           <Route path="/sections" element={<Sections />} />
           <Route path="/mark-attendance" element={<MarkAttendance />} />
           <Route path="/attendance-report" element={<AttendanceReport />} />
           <Route path="/reports" element={<Reports />} />
           {/* <Route path="/settings" element={<Settings />} /> */}
+
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-signup" element={<AdminSignUp />} />
         </Route>
       </Routes>
     </BrowserRouter>
