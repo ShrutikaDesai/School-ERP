@@ -48,6 +48,9 @@ const AdminLayout = () => {
   const location = useLocation();
   const { token } = theme.useToken();
 
+  const authPages = ["/admin-login", "/admin-signup"];
+  const isAuthPage = authPages.includes(location.pathname);
+
   const menuItems = [
     {
       key: "/",
@@ -137,7 +140,7 @@ const AdminLayout = () => {
     <Layout className="erp-layout" style={{ height: "100vh", overflow: "hidden" }}>
 
       {/* SIDEBAR */}
-      {!isMobile && (
+    {!isMobile && !isAuthPage && (
         // <Sider
         //   collapsible
         //   collapsed={collapsed}
@@ -247,45 +250,32 @@ const AdminLayout = () => {
 </Sider>
       )}
 
-      {/* MOBILE DRAWER */}
-      <Drawer
-        title="School ERP"
-        placement="left"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        width={260}
-        bodyStyle={{ padding: 0 }}
-      >
-        {/* <div className="erp-user-panel-wrapper">
-  <div className="erp-user-panel">
-    <Avatar
-      size={64}
-      src="https://i.pravatar.cc/150?img=12"
-      icon={<UserOutlined />}
-      className="erp-user-avatar"
+     {/* MOBILE DRAWER */}
+{!isAuthPage && (
+  <Drawer
+    title="School ERP"
+    placement="left"
+    open={drawerOpen}
+    onClose={() => setDrawerOpen(false)}
+    width={260}
+    bodyStyle={{ padding: 0 }}
+  >
+    <Menu
+      theme="dark"
+      mode="inline"
+      selectedKeys={[location.pathname]}
+      openKeys={openKeys}
+      items={menuItems}
+      onClick={handleMenuClick}
+      onOpenChange={handleOpenChange}
+      style={{
+        background: "transparent",
+        borderRight: "none",
+        color: "#353333"
+      }}
     />
-
-    <div className="erp-user-info">
-      <div className="erp-user-name">Admin User</div>
-      <div className="erp-user-role">Administrator</div>
-    </div>
-  </div>
-</div> */}
-       <Menu
-  theme="dark"
-  mode="inline"
-  selectedKeys={[location.pathname]}
-  openKeys={openKeys}
-  items={menuItems}
-  onClick={handleMenuClick}
-  onOpenChange={handleOpenChange}
-  style={{
-    background: "transparent",
-    borderRight: "none",
-    color: "#353333"
-  }}
-/>
-      </Drawer>
+  </Drawer>
+)}
 
       {/* MAIN LAYOUT */}
       <Layout
@@ -295,40 +285,55 @@ const AdminLayout = () => {
         }}
       >
 
-        {/* HEADER */}
-        <Header
+      {/* HEADER */}
+{!isAuthPage && (
+  <Header
+    style={{
+      position: "fixed",
+      top: 0,
+      left: isMobile ? 0 : (collapsed ? 80 : 260),
+      right: 0,
+      height: 64,
+      background: token.colorBgContainer,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "0 16px",
+      zIndex: 1000,
+      boxShadow: token.boxShadow
+    }}
+  >
+    <Button
+      type="text"
+      icon={
+        isMobile
+          ? <MenuOutlined />
+          : collapsed
+            ? <MenuUnfoldOutlined />
+            : <MenuFoldOutlined />
+      }
+      onClick={() =>
+        isMobile
+          ? setDrawerOpen(true)
+          : setCollapsed(!collapsed)
+      }
+    />
+
+    <Space>
+      {!isMobile && <Text strong>Welcome Admin</Text>}
+
+      <Dropdown menu={profileMenu}>
+        <Avatar
+          icon={<UserOutlined />}
           style={{
-            position: "fixed",
-            top: 0,
-            left: isMobile ? 0 : (collapsed ? 80 : 260),
-            right: 0,
-            height: 64,
-            background: token.colorBgContainer,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "0 16px",
-            zIndex: 1000,
-            boxShadow: token.boxShadow
+            background: token.colorPrimary,
+            cursor: "pointer"
           }}
-        >
-          <Button
-            type="text"
-            icon={isMobile ? <MenuOutlined /> : collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => isMobile ? setDrawerOpen(true) : setCollapsed(!collapsed)}
-          />
-
-          <Space>
-            {!isMobile && <Text strong>Welcome Admin</Text>}
-
-            <Dropdown menu={profileMenu}>
-              <Avatar
-                icon={<UserOutlined />}
-                style={{ background: token.colorPrimary, cursor: "pointer" }}
-              />
-            </Dropdown>
-          </Space>
-        </Header>
+        />
+      </Dropdown>
+    </Space>
+  </Header>
+)}
 
         {/* CONTENT */}
         <Content
