@@ -23,7 +23,8 @@ import {
   SettingOutlined,
   UserOutlined,
   LogoutOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  BankOutlined
 } from "@ant-design/icons";
 
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
@@ -86,14 +87,14 @@ const AdminLayout = () => {
     label: "REPORTS",
   },
 
-  {
-    key: "others",
-    icon: <SettingOutlined />,
-    label: "OTHERS",
-    children: [
-      { key: "/settings", label: "Settings" },
-    ],
-  },
+  // {
+  //   key: "others",
+  //   icon: <SettingOutlined />,
+  //   label: "OTHERS",
+  //   children: [
+  //     { key: "/settings", label: "Settings" },
+  //   ],
+  // },
   ];
 
   const getOpenKey = () => {
@@ -137,51 +138,113 @@ const AdminLayout = () => {
 
       {/* SIDEBAR */}
       {!isMobile && (
+        // <Sider
+        //   collapsible
+        //   collapsed={collapsed}
+        //   trigger={null}
+        //   width={260}
+        //   collapsedWidth={80}
+        //   style={{
+        //     background: token.colorPrimary,
+        //     position: "fixed",
+        //     left: 0,
+        //     top: 0,
+        //     bottom: 0,
+        //     overflowY: "auto"
+        //   }}
+        // >
+
+        //   {/* 🔥 USER PROFILE SECTION */}
+        //   <div className="erp-user-panel-wrapper">
+        //     <div className="erp-user-panel">
+        //       <Avatar
+        //         size={64}
+        //         src="https://i.pravatar.cc/150?img=12"
+        //         icon={<UserOutlined />}
+        //         className="erp-user-avatar"
+        //       />
+
+        //       {!collapsed && (
+        //         <div className="erp-user-info">
+        //           <div className="erp-user-name">Admin User</div>
+        //           <div className="erp-user-role">Administrator</div>
+        //         </div>
+        //       )}
+        //     </div>
+        //   </div>
+
+        //   <Menu
+        //     // theme="dark"
+        //     mode="inline"
+        //     selectedKeys={[location.pathname]}
+        //     openKeys={openKeys}
+        //     items={menuItems}
+        //     onClick={handleMenuClick}
+        //     onOpenChange={handleOpenChange}
+        //   />
+        // </Sider>
+
         <Sider
-          collapsible
-          collapsed={collapsed}
-          trigger={null}
-          width={260}
-          collapsedWidth={80}
-          style={{
-            background: token.colorPrimary,
-            position: "fixed",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            overflowY: "auto"
-          }}
-        >
+  collapsed={collapsed}
+  trigger={null}
+  width={260}
+  collapsedWidth={80}
+  className="erp-sidebar"
+>
 
-          {/* 🔥 USER PROFILE SECTION */}
-          <div className="erp-user-panel-wrapper">
-            <div className="erp-user-panel">
-              <Avatar
-                size={64}
-                src="https://i.pravatar.cc/150?img=12"
-                icon={<UserOutlined />}
-                className="erp-user-avatar"
-              />
+  {/* LOGO */}
+  <div className="erp-logo">
+    <div className="erp-logo-icon">
+      <BankOutlined />  
+    </div>
 
-              {!collapsed && (
-                <div className="erp-user-info">
-                  <div className="erp-user-name">Admin User</div>
-                  <div className="erp-user-role">Administrator</div>
-                </div>
-              )}
-            </div>
+    {!collapsed && (
+      <div className="erp-logo-text">
+        School ERP
+      </div>
+    )}
+  </div>
+
+  {/* MENU */}
+  <Menu
+    mode="inline"
+    className="erp-sidebar-menu"
+    selectedKeys={[location.pathname]}
+    openKeys={openKeys}
+    items={menuItems}
+    onClick={handleMenuClick}
+    onOpenChange={handleOpenChange}
+  />
+
+  {/* BOTTOM USER */}
+  <div className="erp-sidebar-footer">
+
+    <div className="erp-footer-user">
+      <Avatar
+        size={40}
+        src="https://i.pravatar.cc/150?img=12"
+      />
+
+      {!collapsed && (
+        <div className="erp-footer-user-info">
+          <div className="erp-footer-name">
+            Admin User
           </div>
 
-          <Menu
-            theme="dark"
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            openKeys={openKeys}
-            items={menuItems}
-            onClick={handleMenuClick}
-            onOpenChange={handleOpenChange}
-          />
-        </Sider>
+          <div className="erp-footer-email">
+            admin@school.com
+          </div>
+        </div>
+      )}
+    </div>
+
+    {!collapsed && (
+      <SettingOutlined className="erp-footer-setting" />
+    )}
+
+  </div>
+
+</Sider>
       )}
 
       {/* MOBILE DRAWER */}
