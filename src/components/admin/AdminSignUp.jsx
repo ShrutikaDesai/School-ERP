@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   Box,
   Paper,
@@ -11,6 +12,7 @@ import {
   InputAdornment,
   IconButton,
   Stack,
+  useTheme,
 } from "@mui/material";
 
 import {
@@ -25,58 +27,93 @@ import {
 import GoogleIcon from "@mui/icons-material/Google";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
 
+import { useNavigate } from "react-router-dom";
+
 const AdminSignUp = () => {
+
+  const theme = useTheme();
+
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
 
   return (
+
     <Box
       sx={{
         minHeight: "100vh",
-        background: "#F4F7FB",
+        background:theme.palette.background.default,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         p: 2,
       }}
     >
+
       <Paper
         elevation={0}
         sx={{
           width: "100%",
-          maxWidth: 520,
-          borderRadius: "32px",
-          px: { xs: 3, sm: 6 },
-          py: { xs: 4, sm: 5 },
+          maxWidth: 470,
+
+          borderRadius: "20px",
+
+          px: { xs: 2.5, sm: 4 },
+          py: { xs: 2.5, sm: 3 },
+
           border: "1px solid #E5E7EB",
-          boxShadow: "0 20px 60px rgba(15,23,42,0.08)",
+
+          background:
+            theme.palette.background.paper,
+
+          boxShadow:
+            "0 8px 30px rgba(15,23,42,0.06)",
         }}
       >
+
         {/* LOGO */}
         <Box
           sx={{
-            width: 72,
-            height: 72,
-            borderRadius: "22px",
-            background: "#1E293B",
+            width: 56,
+            height: 56,
+
+            borderRadius: "16px",
+
+            background:
+              theme.palette.primary.main,
+
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+
             mx: "auto",
-            mb: 4,
+            mb: 1.5,
           }}
         >
-          <School sx={{ color: "#fff", fontSize: 34 }} />
+          <School
+            sx={{
+              color: "#fff",
+              fontSize: 28,
+            }}
+          />
         </Box>
 
         {/* HEADER */}
-        <Box textAlign="center" mb={4}>
+        <Box textAlign="center" mb={2}>
+
           <Typography
-            variant="h3"
+            variant="h5"
             fontWeight={700}
             sx={{
-              fontSize: { xs: "2rem", sm: "2.5rem" },
-              color: "#0F172A",
-              mb: 1,
+              fontSize: {
+                xs: "1.6rem",
+                sm: "2rem",
+              },
+
+              color:
+                theme.palette.text.primary,
+
+              mb: 0.5,
             }}
           >
             Create Account
@@ -84,23 +121,31 @@ const AdminSignUp = () => {
 
           <Typography
             sx={{
-              color: "#64748B",
-              fontSize: 18,
+              color:
+                theme.palette.text.secondary,
+
+              fontSize: 14,
             }}
           >
             Sign up to Bright Hill Academy ERP
           </Typography>
+
         </Box>
 
         {/* FORM */}
-        <Stack spacing={3}>
+        <Stack spacing={1.8}>
+
           {/* FULL NAME */}
           <Box>
+
             <Typography
               sx={{
-                mb: 1,
+                mb: 0.7,
                 fontWeight: 600,
-                color: "#334155",
+                fontSize: 13,
+
+                color:
+                  theme.palette.text.primary,
               }}
             >
               Full Name
@@ -109,31 +154,45 @@ const AdminSignUp = () => {
             <TextField
               fullWidth
               placeholder="Enter your full name"
-              size="medium"
+              size="small"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <PersonOutlineOutlined  sx={{ color: "#94A3B8" }} />
+                    <PersonOutlineOutlined
+                      sx={{
+                        color:
+                          theme.palette.text.secondary,
+                        fontSize: 20,
+                      }}
+                    />
                   </InputAdornment>
                 ),
               }}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "18px",
-                  background: "#F8FAFC",
-                  height: 62,
+                  borderRadius: "14px",
+
+                  background:
+                    theme.palette.background.default,
+
+                  height: 48,
                 },
               }}
             />
+
           </Box>
 
           {/* EMAIL */}
           <Box>
+
             <Typography
               sx={{
-                mb: 1,
+                mb: 0.7,
                 fontWeight: 600,
-                color: "#334155",
+                fontSize: 13,
+
+                color:
+                  theme.palette.text.primary,
               }}
             >
               Email address
@@ -142,31 +201,45 @@ const AdminSignUp = () => {
             <TextField
               fullWidth
               placeholder="admin@brighthill.edu"
-              size="medium"
+              size="small"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <EmailOutlined sx={{ color: "#94A3B8" }} />
+                    <EmailOutlined
+                      sx={{
+                        color:
+                          theme.palette.text.secondary,
+                        fontSize: 20,
+                      }}
+                    />
                   </InputAdornment>
                 ),
               }}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "18px",
-                  background: "#F8FAFC",
-                  height: 62,
+                  borderRadius: "14px",
+
+                  background:
+                    theme.palette.background.default,
+
+                  height: 48,
                 },
               }}
             />
+
           </Box>
 
           {/* PASSWORD */}
           <Box>
+
             <Typography
               sx={{
-                mb: 1,
+                mb: 0.7,
                 fontWeight: 600,
-                color: "#334155",
+                fontSize: 13,
+
+                color:
+                  theme.palette.text.primary,
               }}
             >
               Password
@@ -174,66 +247,101 @@ const AdminSignUp = () => {
 
             <TextField
               fullWidth
-              type={showPassword ? "text" : "password"}
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
               placeholder="Enter password"
-              size="medium"
+              size="small"
               InputProps={{
+
                 startAdornment: (
                   <InputAdornment position="start">
-                    <LockOutlined sx={{ color: "#94A3B8" }} />
+                    <LockOutlined
+                      sx={{
+                        color:
+                          theme.palette.text.secondary,
+                        fontSize: 20,
+                      }}
+                    />
                   </InputAdornment>
                 ),
 
                 endAdornment: (
                   <InputAdornment position="end">
+
                     <IconButton
+                      size="small"
                       onClick={() =>
                         setShowPassword(!showPassword)
                       }
+                      onMouseDown={(event) => event.preventDefault()}
                     >
-                      {showPassword ? (
-                        <VisibilityOff />
-                      ) : (
-                        <Visibility />
-                      )}
+                      {
+                        showPassword
+                          ? <VisibilityOff fontSize="small" />
+                          : <Visibility fontSize="small" />
+                      }
                     </IconButton>
+
                   </InputAdornment>
                 ),
               }}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "18px",
-                  background: "#F8FAFC",
-                  height: 62,
+                  borderRadius: "14px",
+
+                  background:
+                    theme.palette.background.default,
+
+                  height: 48,
                 },
               }}
             />
+
           </Box>
 
-          {/* REMEMBER */}
+          {/* OPTIONS */}
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
+
               flexWrap: "wrap",
+
               gap: 1,
             }}
           >
+
             <FormControlLabel
-              control={<Checkbox />}
-              label="Remember me"
+              sx={{ m: 0 }}
+              control={<Checkbox size="small" />}
+              label={
+                <Typography fontSize={13}>
+                  Remember me
+                </Typography>
+              }
             />
 
             <Typography
+              onClick={() =>
+                navigate("/")
+              }
               sx={{
-                color: "#4F46E5",
+                color:
+                  theme.palette.primary.main,
+
                 fontWeight: 600,
+                fontSize: 13,
+
                 cursor: "pointer",
               }}
             >
               Already have an account?
             </Typography>
+
           </Box>
 
           {/* SIGN UP BUTTON */}
@@ -241,55 +349,77 @@ const AdminSignUp = () => {
             fullWidth
             variant="contained"
             sx={{
-              height: 58,
-              borderRadius: "18px",
-              textTransform: "none",
-              fontSize: 20,
+              height: 46,
+
+              borderRadius: "14px",
+
+              fontSize: 16,
               fontWeight: 700,
+
               background:
-                "linear-gradient(135deg,#F87171,#EF4444)",
-              boxShadow: "none",
+                theme.palette.primary.main,
 
               "&:hover": {
                 background:
-                  "linear-gradient(135deg,#EF4444,#DC2626)",
-                boxShadow: "none",
+                  theme.palette.secondary.main,
               },
             }}
           >
             Sign Up
           </Button>
+
         </Stack>
 
         {/* DIVIDER */}
-        <Box mt={5} mb={4}>
+        <Box mt={2.5} mb={2.5}>
+
           <Divider>
+
             <Typography
               sx={{
-                color: "#94A3B8",
+                color:
+                  theme.palette.text.secondary,
+
                 px: 1,
+                fontSize: 13,
               }}
             >
               Or continue with
             </Typography>
+
           </Divider>
+
         </Box>
 
         {/* SOCIAL BUTTONS */}
         <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={2}
+          direction={{
+            xs: "column",
+            sm: "row",
+          }}
+          spacing={1.5}
         >
+
           <Button
             fullWidth
             variant="outlined"
-            startIcon={<GoogleIcon size={22} />}
+            startIcon={<GoogleIcon />}
+            onClick={() =>
+              window.open(
+                "https://accounts.google.com/",
+                "_blank"
+              )
+            }
             sx={{
-              height: 56,
-              borderRadius: "16px",
-              textTransform: "none",
-              fontSize: 18,
-              color: "#0F172A",
+              height: 46,
+
+              borderRadius: "12px",
+
+              fontSize: 14,
+
+              color:
+                theme.palette.text.primary,
+
               borderColor: "#E2E8F0",
             }}
           >
@@ -299,59 +429,78 @@ const AdminSignUp = () => {
           <Button
             fullWidth
             variant="outlined"
-            startIcon={
-              <MicrosoftIcon
-                size={18}
-                color="#2563EB"
-              />
+            startIcon={<MicrosoftIcon />}
+            onClick={() =>
+              window.open(
+                "https://login.microsoftonline.com/",
+                "_blank"
+              )
             }
             sx={{
-              height: 56,
-              borderRadius: "16px",
-              textTransform: "none",
-              fontSize: 18,
-              color: "#0F172A",
+              height: 46,
+
+              borderRadius: "12px",
+
+              fontSize: 14,
+
+              color:
+                theme.palette.text.primary,
+
               borderColor: "#E2E8F0",
             }}
           >
             Microsoft
           </Button>
+
         </Stack>
 
         {/* FOOTER */}
         <Box
           sx={{
             textAlign: "center",
-            mt: 6,
+            mt: 3,
           }}
         >
+
           <Typography
             sx={{
-              color: "#94A3B8",
-              mb: 1,
+              color:
+                theme.palette.text.secondary,
+
+              mb: 0.5,
+              fontSize: 13,
             }}
           >
             Having trouble?{" "}
+
             <span
               style={{
-                color: "#4F46E5",
+                color:
+                  theme.palette.primary.main,
+
                 cursor: "pointer",
+
+                fontWeight: 600,
               }}
             >
               Contact Administrator
             </span>
+
           </Typography>
 
           <Typography
             sx={{
               color: "#CBD5E1",
-              fontSize: 14,
+              fontSize: 12,
             }}
           >
-            Privacy Policy &nbsp; • &nbsp; Terms of Service
+            Privacy Policy • Terms of Service
           </Typography>
+
         </Box>
+
       </Paper>
+
     </Box>
   );
 };

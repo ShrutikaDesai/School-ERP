@@ -71,7 +71,7 @@ const Dashboard = () => {
     data: attendanceMap[selectedClass],
     xField: "month",
     yField: "attendance",
-    color: token.colorPrimary,
+    color: token.colorInfo,
     height: isMobile ? 250 : 320,
     label: {
       position: "middle",
@@ -387,8 +387,6 @@ const Dashboard = () => {
 
       </Row>
 
-
-
       {/* Table */}
 
       <Card
@@ -405,8 +403,6 @@ const Dashboard = () => {
           scroll={{ x: 700 }}
         />
       </Card>
-
-
 
       {/* Buttons */}
 
@@ -428,7 +424,7 @@ const Dashboard = () => {
     <Button
       block={isMobile}
       type="primary"
-      onClick={() => navigate("/attendance-report")}
+      onClick={() => navigate("/s-admin/attendance-report")}
     >
       Attendance Reports
     </Button>
@@ -436,7 +432,7 @@ const Dashboard = () => {
     <Button
       block={isMobile}
       type="primary"
-      onClick={() => navigate("/students")}
+      onClick={() => navigate("/s-admin/students")}
     >
       Student Reports
     </Button>
@@ -444,7 +440,7 @@ const Dashboard = () => {
     <Button
       block={isMobile}
       type="primary"
-      onClick={() => navigate("/classes")}
+      onClick={() => navigate("/s-admin/classes")}
     >
       Class Reports
     </Button>
@@ -452,7 +448,7 @@ const Dashboard = () => {
     <Button
       block={isMobile}
       type="primary"
-      onClick={() => navigate("/sections")}
+      onClick={() => navigate("/s-admin/sections")}
     >
       Section Reports
     </Button>

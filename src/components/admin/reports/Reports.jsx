@@ -17,28 +17,28 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 const reportTypes = [
   {
     title: "Student Report",
-    route: "/students",
+    route: "/s-admin/students",
     desc: "Generate comprehensive student reports including personal details, academic performance, and attendance history.",
     icon: <PeopleIcon />,
     bg: "#EEF2FF",
   },
   {
     title: "Attendance Report",
-    route: "/attendance-report",
+    route: "/s-admin/attendance-report",
     desc: "View and export attendance data by class, section, and date range. Track trends over time.",
     icon: <EventIcon />,
     bg: "#E6F6EC",
   },
   {
     title: "Class Report",
-    route: "/classes",
+    route: "/s-admin/classes",
     desc: "Get detailed class-wise reports including student count, section distribution, and teacher assignments.",
     icon: <SchoolIcon />,
     bg: "#F3E8FF",
   },
 {
   title: "Section Reports",
-  route: "/sections",
+  route: "/s-admin/sections",
   desc: "View and manage all section-wise reports including student distribution, attendance, and academic performance.",
   icon: <BarChartIcon />,
   bg: "#FFF4E5",
