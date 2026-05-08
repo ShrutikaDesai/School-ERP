@@ -7,7 +7,7 @@ const adminTheme = {
 
   token: {
     colorPrimary: "#1565C0",      // academic blue
-    colorInfo: "#1565C0",
+    colorInfo: "#1976D2",
     colorSuccess: "#2E7D32",
     colorWarning: "#F9A825",
     colorError: "#D32F2F",

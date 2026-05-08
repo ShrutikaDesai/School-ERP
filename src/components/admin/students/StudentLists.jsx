@@ -380,7 +380,7 @@ const StudentLists = () => {
           </Typography>
         </Box>
 
-        <Button variant="contained" startIcon={<Add />} onClick={() => navigate("/add-student")} >
+        <Button variant="contained" startIcon={<Add />} onClick={() => navigate("/s-admin/add-student")} >
           Add Student
         </Button>
       </Stack>

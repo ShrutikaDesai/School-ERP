@@ -48,12 +48,12 @@ const AdminLayout = () => {
   const location = useLocation();
   const { token } = theme.useToken();
 
-  const authPages = ["/admin-login", "/admin-signup"];
+  const authPages = ["/", "/signup"];
   const isAuthPage = authPages.includes(location.pathname);
 
   const menuItems = [
     {
-      key: "/",
+      key: "/s-admin/dashboard",
       icon: <DashboardOutlined />,
       label: "DASHBOARD",
     },
@@ -62,8 +62,8 @@ const AdminLayout = () => {
       icon: <TeamOutlined />,
       label: "STUDENT MANAGEMENT",
       children: [
-        { key: "/students", label: "Students" },
-        { key: "/add-student", label: "Add Student" }
+        { key: "/s-admin/students", label: "Students" },
+        { key: "/s-admin/add-student", label: "Add Student" }
       ],
     },
     {
@@ -71,8 +71,8 @@ const AdminLayout = () => {
       icon: <BookOutlined />,
       label: "ACADEMICS",
       children: [
-        { key: "/classes", label: "Classes" },
-        { key: "/sections", label: "Sections" },
+        { key: "/s-admin/classes", label: "Classes" },
+        { key: "/s-admin/sections", label: "Sections" },
       ],
     },
     {
@@ -80,31 +80,31 @@ const AdminLayout = () => {
       icon: <CalendarOutlined />,
       label: "ATTENDANCE",
       children: [
-        { key: "/mark-attendance", label: "Mark Attendance" },
-        { key: "/attendance-report", label: "Attendance Report" },
+        { key: "/s-admin/mark-attendance", label: "Mark Attendance" },
+        { key: "/s-admin/attendance-report", label: "Attendance Report" },
       ],
     },
     {
-    key: "/reports",
-    icon: <FileTextOutlined />, 
-    label: "REPORTS",
-  },
+      key: "/s-admin/reports",
+      icon: <FileTextOutlined />,
+      label: "REPORTS",
+    },
 
-  // {
-  //   key: "others",
-  //   icon: <SettingOutlined />,
-  //   label: "OTHERS",
-  //   children: [
-  //     { key: "/settings", label: "Settings" },
-  //   ],
-  // },
+    // {
+    //   key: "others",
+    //   icon: <SettingOutlined />,
+    //   label: "OTHERS",
+    //   children: [
+    //     { key: "/settings", label: "Settings" },
+    //   ],
+    // },
   ];
 
   const getOpenKey = () => {
-    if (location.pathname.startsWith("/students")) return "students";
-    if (location.pathname.startsWith("/classes") || location.pathname.startsWith("/sections")) return "academics";
-    if (location.pathname.startsWith("/mark-attendance") || location.pathname.startsWith("/attendance-report")) return "attendance";
-    if (location.pathname.startsWith("/reports") || location.pathname.startsWith("/settings")) return "others";
+    if (location.pathname.startsWith("/s-admin/students")) return "students";
+    if (location.pathname.startsWith("/s-admin/classes") || location.pathname.startsWith("/s-admin/sections")) return "academics";
+    if (location.pathname.startsWith("/s-admin/mark-attendance") || location.pathname.startsWith("/s-admin/attendance-report")) return "attendance";
+    if (location.pathname.startsWith("/s-admin/reports") || location.pathname.startsWith("/s-admin/settings")) return "others";
     return "";
   };
 
@@ -140,7 +140,7 @@ const AdminLayout = () => {
     <Layout className="erp-layout" style={{ height: "100vh", overflow: "hidden" }}>
 
       {/* SIDEBAR */}
-    {!isMobile && !isAuthPage && (
+      {!isMobile && !isAuthPage && (
         // <Sider
         //   collapsible
         //   collapsed={collapsed}
@@ -188,94 +188,94 @@ const AdminLayout = () => {
         // </Sider>
 
         <Sider
-  collapsed={collapsed}
-  trigger={null}
-  width={260}
-  collapsedWidth={80}
-  className="erp-sidebar"
->
+          collapsed={collapsed}
+          trigger={null}
+          width={260}
+          collapsedWidth={80}
+          className="erp-sidebar"
+        >
 
-  {/* LOGO */}
-  <div className="erp-logo">
-    <div className="erp-logo-icon">
-      <BankOutlined />  
-    </div>
+          {/* LOGO */}
+          <div className="erp-logo">
+            <div className="erp-logo-icon">
+              <BankOutlined />
+            </div>
 
-    {!collapsed && (
-      <div className="erp-logo-text">
-        School ERP
-      </div>
-    )}
-  </div>
-
-  {/* MENU */}
-  <Menu
-    mode="inline"
-    className="erp-sidebar-menu"
-    selectedKeys={[location.pathname]}
-    openKeys={openKeys}
-    items={menuItems}
-    onClick={handleMenuClick}
-    onOpenChange={handleOpenChange}
-  />
-
-  {/* BOTTOM USER */}
-  <div className="erp-sidebar-footer">
-
-    <div className="erp-footer-user">
-      <Avatar
-        size={40}
-        src="https://i.pravatar.cc/150?img=12"
-      />
-
-      {!collapsed && (
-        <div className="erp-footer-user-info">
-          <div className="erp-footer-name">
-            Admin User
+            {!collapsed && (
+              <div className="erp-logo-text">
+                School ERP
+              </div>
+            )}
           </div>
 
-          <div className="erp-footer-email">
-            admin@school.com
+          {/* MENU */}
+          <Menu
+            mode="inline"
+            className="erp-sidebar-menu"
+            selectedKeys={[location.pathname]}
+            openKeys={openKeys}
+            items={menuItems}
+            onClick={handleMenuClick}
+            onOpenChange={handleOpenChange}
+          />
+
+          {/* BOTTOM USER */}
+          <div className="erp-sidebar-footer">
+
+            <div className="erp-footer-user">
+              <Avatar
+                size={40}
+                src="https://i.pravatar.cc/150?img=12"
+              />
+
+              {!collapsed && (
+                <div className="erp-footer-user-info">
+                  <div className="erp-footer-name">
+                    Admin User
+                  </div>
+
+                  <div className="erp-footer-email">
+                    admin@school.com
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!collapsed && (
+              <SettingOutlined className="erp-footer-setting" />
+            )}
+
           </div>
-        </div>
-      )}
-    </div>
 
-    {!collapsed && (
-      <SettingOutlined className="erp-footer-setting" />
-    )}
-
-  </div>
-
-</Sider>
+        </Sider>
       )}
 
-     {/* MOBILE DRAWER */}
-{!isAuthPage && (
-  <Drawer
-    title="School ERP"
-    placement="left"
-    open={drawerOpen}
-    onClose={() => setDrawerOpen(false)}
-    width={260}
-    bodyStyle={{ padding: 0 }}
-  >
-    <Menu
-      theme="dark"
-      mode="inline"
-      selectedKeys={[location.pathname]}
-      openKeys={openKeys}
-      items={menuItems}
-      onClick={handleMenuClick}
-      onOpenChange={handleOpenChange}
-      style={{
-        background: "transparent",
-        borderRight: "none",
-        color: "#353333"
-      }}
-    />
-  </Drawer>
-)}
+      {/* MOBILE DRAWER */}
+      {!isAuthPage && (
+        <Drawer
+          title="School ERP"
+          placement="left"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          width={260}
+          bodyStyle={{ padding: 0 }}
+        >
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[location.pathname]}
+            openKeys={openKeys}
+            items={menuItems}
+            onClick={handleMenuClick}
+            onOpenChange={handleOpenChange}
+            style={{
+              background: "transparent",
+              borderRight: "none",
+              color: "#353333"
+            }}
+          />
+        </Drawer>
+      )}
 
       {/* MAIN LAYOUT */}
       <Layout
@@ -285,74 +285,78 @@ const AdminLayout = () => {
         }}
       >
 
-      {/* HEADER */}
-{!isAuthPage && (
-  <Header
-    style={{
-      position: "fixed",
-      top: 0,
-      left: isMobile ? 0 : (collapsed ? 80 : 260),
-      right: 0,
-      height: 64,
-      background: token.colorBgContainer,
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "0 16px",
-      zIndex: 1000,
-      boxShadow: token.boxShadow
-    }}
-  >
-    <Button
-      type="text"
-      icon={
-        isMobile
-          ? <MenuOutlined />
-          : collapsed
-            ? <MenuUnfoldOutlined />
-            : <MenuFoldOutlined />
-      }
-      onClick={() =>
-        isMobile
-          ? setDrawerOpen(true)
-          : setCollapsed(!collapsed)
-      }
-    />
+        {/* HEADER */}
+        {!isAuthPage && (
+          <Header
+            style={{
+              position: "fixed",
+              top: 0,
+              left: isAuthPage
+                ? 0
+                : isMobile
+                  ? 0
+                  : (collapsed ? 80 : 260),
+              right: 0,
+              height: 64,
+              background: token.colorBgContainer,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "0 16px",
+              zIndex: 1000,
+              boxShadow: token.boxShadow
+            }}
+          >
+            <Button
+              type="text"
+              icon={
+                isMobile
+                  ? <MenuOutlined />
+                  : collapsed
+                    ? <MenuUnfoldOutlined />
+                    : <MenuFoldOutlined />
+              }
+              onClick={() =>
+                isMobile
+                  ? setDrawerOpen(true)
+                  : setCollapsed(!collapsed)
+              }
+            />
 
-    <Space>
-      {!isMobile && <Text strong>Welcome Admin</Text>}
+            <Space>
+              {!isMobile && <Text strong>Welcome Admin</Text>}
 
-      <Dropdown menu={profileMenu}>
-        <Avatar
-          icon={<UserOutlined />}
-          style={{
-            background: token.colorPrimary,
-            cursor: "pointer"
-          }}
-        />
-      </Dropdown>
-    </Space>
-  </Header>
-)}
+              <Dropdown menu={profileMenu}>
+                <Avatar
+                  icon={<UserOutlined />}
+                  style={{
+                    background: token.colorPrimary,
+                    cursor: "pointer"
+                  }}
+                />
+              </Dropdown>
+            </Space>
+          </Header>
+        )}
 
         {/* CONTENT */}
-       <Content
-  style={{
-    marginTop: isAuthPage ? 0 : 64,
-    height: isAuthPage
-      ? "100vh"
-      : "calc(100vh - 64px)",
+        <Content
+          style={{
+            marginTop: isAuthPage ? 0 : 64,
+            height: isAuthPage
+              ? "100vh"
+              : "calc(100vh - 64px)",
 
-    overflowY: "auto",
-    padding: isAuthPage
-      ? 0
-      : isMobile
-        ? 12
-        : 20,
+            overflowY: "auto",
+            padding: isAuthPage
+              ? 0
+              : isMobile
+                ? 12
+                : 20,
 
-    background: token.colorBgLayout
-  }}
->
+            background: token.colorBgLayout
+          }}
+        >
           <Outlet />
         </Content>
 

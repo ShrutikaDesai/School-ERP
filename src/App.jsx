@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import AdminLayout from "./layouts/AdminLayout";
+
 import Dashboard from "./components/admin/dashboard/Dashboard";
 import StudentsPage from "./components/admin/students/studentList";
 import Classes from "./components/admin/acadamics/Classes";
@@ -13,29 +15,30 @@ import AdminSignUp from "./components/admin/AdminSignUp.jsx";
 import AdminLogin from "./components/admin/AdminLogin.jsx";
 import Profile from "./components/admin/Profile.jsx";
 
-
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<AdminLayout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/students" element={<StudentLists />} />
-              {/* <Route path="/students" element={<StudentsPage />} /> */}
-          <Route path="/add-student" element={<AddStudent />} />
-          <Route path="/students/:id/edit" element={<AddStudent mode="edit" />} />
-          <Route path="/students/:id/view" element={<AddStudent mode="view" />} />
-          <Route path="/classes" element={<Classes />} />
-          <Route path="/sections" element={<Sections />} />
-          <Route path="/mark-attendance" element={<MarkAttendance />} />
-          <Route path="/attendance-report" element={<AttendanceReport />} />
-          <Route path="/reports" element={<Reports />} />
-          {/* <Route path="/settings" element={<Settings />} /> */}
-          <Route path="/profile" element={<Profile />} />
+        {/* PUBLIC ROUTES */}
+            <Route path="/" element={<AdminLogin />} />
+          <Route path="signup" element={<AdminSignUp />} />
 
-          <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/admin-signup" element={<AdminSignUp />} />
+        {/* ADMIN ROUTES */}
+        <Route path="/s-admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="students" element={<StudentLists />} />
+          {/* <Route path="students" element={<StudentsPage />} /> */}
+          <Route path="add-student" element={<AddStudent />} />
+          <Route path="students/:id/edit" element={<AddStudent mode="edit" />}/>
+          <Route path="students/:id/view" element={<AddStudent mode="view" />} />
+          <Route path="classes" element={<Classes />} />
+          <Route path="sections" element={<Sections />} />
+          <Route path="mark-attendance" element={<MarkAttendance />} />
+          <Route path="attendance-report" element={<AttendanceReport />} />
+          <Route path="reports" element={<Reports />} />
+
         </Route>
+
       </Routes>
     </BrowserRouter>
   );
