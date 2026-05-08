@@ -21,6 +21,7 @@ import Transport from "./components/admin/transport/Transport.jsx";
 import Communication from "./components/admin/communication/Communication.jsx";
 import Settings from "./components/admin/settings/Settings.jsx";
 import ViewStudentDetails from "./components/admin/students/ViewStudentDetails.jsx";
+import Profile from "./components/admin/profile/Profile.jsx";
 
 function App() {
   return (
@@ -49,9 +50,12 @@ function App() {
           <Route path="exams" element={<Exams />} />
           <Route path="transport" element={<Transport />} />
           <Route path="communication" element={<Communication />} />
-          <Route path="settings" element={<Settings />} /> 
-
+  
           <Route path="students/:id/view" element={<ViewStudentDetails />} />
+          <Route path="settings" element={<Settings />} />  
+
+          
+          <Route path="profile" element={<Profile />} />
 
         </Route>
 

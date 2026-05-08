@@ -432,7 +432,7 @@ const MarkAttendance = () => {
         <Row gutter={[16, 16]}>
           <Col xs={24} md={6}>
             <Autocomplete
-              options={["FY BCA", "SY BCA"]}
+              options={["7th Standard", "8th Standard"]}
               value={className}
               onChange={(e, v) => setClassName(v || "")}
               renderInput={(params) => (

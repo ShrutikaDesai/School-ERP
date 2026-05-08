@@ -19,7 +19,8 @@ import {
   BarChartOutlined
 } from "@ant-design/icons";
 
-import { Column } from "@ant-design/plots";
+
+import { Line, Column } from "@ant-design/plots";
 import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
@@ -38,11 +39,11 @@ const Dashboard = () => {
 
   const attendanceMap = {
     all: [
-      { month: "Jan", attendance: 82 },
-      { month: "Feb", attendance: 85 },
-      { month: "Mar", attendance: 88 },
-      { month: "Apr", attendance: 84 },
-      { month: "May", attendance: 90 },
+      { month: "Jan", attendance: 80, type: "Attendance"},
+      { month: "Feb", attendance: 85, type: "Attendance"},
+      { month: "Mar", attendance: 79, type: "Attendance"},
+      { month: "Apr", attendance: 82, type: "Attendance"},
+      { month: "May", attendance: 90, type: "Attendance"},
     ],
     fybca: [
       { month: "Jan", attendance: 88 },
@@ -66,19 +67,65 @@ const Dashboard = () => {
       { month: "May", attendance: 86 },
     ]
   };
+  
 
   const attendanceConfig = {
-    data: attendanceMap[selectedClass],
-    xField: "month",
-    yField: "attendance",
-    color: token.colorInfo,
-    height: isMobile ? 250 : 320,
-    label: {
-      position: "middle",
-      style: { fill: "#fff" }
-    }
-  };
+  data: attendanceMap[selectedClass] || attendanceMap.all,
 
+  xField: "month",
+  yField: "attendance",
+
+  smooth: true,
+
+  height: 320,
+
+  padding: [20, 20, 40, 10],
+
+  lineStyle: {
+    stroke: "#ff6b6b",
+    lineWidth: 4
+  },
+
+  point: {
+    size: 4,
+    shape: "circle",
+    style: {
+      fill: "#fff",
+      stroke: "#ff6b6b",
+      lineWidth: 2
+    }
+  },
+
+  seriesField: "type",
+
+legend: false,
+
+tooltip: {
+  items: ["attendance"]
+},
+
+  xAxis: {
+    line: null,
+    tickLine: null
+  },
+
+  yAxis: {
+    grid: {
+      line: {
+        style: {
+          stroke: "#f0f0f0",
+          lineDash: [4, 4]
+        }
+      }
+    }
+  },
+
+  interactions: [
+    {
+      type: "marker-active"
+    }
+  ]
+};
 
   const columns = [
     {
@@ -329,16 +376,17 @@ const Dashboard = () => {
                 }}
               >
                 <Option value="all">All</Option>
-                <Option value="fybca">FY BCA</Option>
-                <Option value="sybca">SY BCA</Option>
-                <Option value="tybca">TY BCA</Option>
+                <Option value="7th Standard">7th Standard</Option>
+                <Option value="8th Standard">8th Standard</Option>
+                <Option value="9th Standard">9th Standard</Option>
+                <Option value="10th Standard">10th Standard</Option>
               </Select>
             }
             style={{
               boxShadow: token.boxShadow
             }}
           >
-            <Column {...attendanceConfig} />
+            <Line {...attendanceConfig} />
           </Card>
         </Col>
 

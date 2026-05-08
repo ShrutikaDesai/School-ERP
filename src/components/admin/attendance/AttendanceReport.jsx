@@ -40,7 +40,7 @@ const rowsData = [
   {
     id: 1,
     name: "Amit Sharma",
-    class: "FY BCA",
+    class: "7th Standard",
     section: "A",
     present: 22,
     absent: 3,
@@ -51,7 +51,7 @@ const rowsData = [
   {
     id: 2,
     name: "Priya Patil",
-    class: "FY BCA",
+    class: "7th Standard",
     section: "B",
     present: 20,
     absent: 5,
@@ -62,7 +62,7 @@ const rowsData = [
   {
     id: 3,
     name: "Rahul Verma",
-    class: "FY BCA",
+    class: "7th Standard",
     section: "A",
     present: 25,
     absent: 0,
@@ -73,7 +73,7 @@ const rowsData = [
   {
     id: 4,
     name: "Sneha Kulkarni",
-    class: "FY BCA",
+    class: "7th Standard",
     section: "B",
     present: 18,
     absent: 7,
@@ -84,7 +84,7 @@ const rowsData = [
   {
     id: 5,
     name: "Vikram Singh",
-    class: "SY BCA",
+    class: "8th Standard",
     section: "A",
     present: 23,
     absent: 2,
@@ -95,7 +95,7 @@ const rowsData = [
   {
     id: 6,
     name: "Pooja Desai",
-    class: "SY BCA",
+    class: "8th Standard",
     section: "B",
     present: 19,
     absent: 6,
@@ -106,7 +106,7 @@ const rowsData = [
   {
     id: 7,
     name: "Karan Mehta",
-    class: "SY BCA",
+    class: "8th Standard",
     section: "A",
     present: 21,
     absent: 4,
@@ -117,7 +117,7 @@ const rowsData = [
   {
     id: 8,
     name: "Neha Joshi",
-    class: "FY BCA",
+    class: "7th Standard",
     section: "A",
     present: 24,
     absent: 1,
@@ -128,7 +128,7 @@ const rowsData = [
   {
     id: 9,
     name: "Arjun Nair",
-    class: "SY BCA",
+    class: "8th Standard",
     section: "B",
     present: 17,
     absent: 8,
@@ -139,7 +139,7 @@ const rowsData = [
   {
     id: 10,
     name: "Anjali Gupta",
-    class: "FY BCA",
+    class: "7th Standard",
     section: "B",
     present: 22,
     absent: 3,
@@ -235,7 +235,7 @@ const AttendanceReport = () => {
   const [classFilter, setClassFilter] = useState("");
   const [sectionFilter, setSectionFilter] = useState("");
   const [dateRange, setDateRange] = useState([null, null]);
-  const classOptions = ["FY BCA", "SY BCA"];
+  const classOptions = ["7th Standard", "8th Standard"];
   const sectionOptions = ["A", "B"];
 
   const handleExportExcel = () => {
