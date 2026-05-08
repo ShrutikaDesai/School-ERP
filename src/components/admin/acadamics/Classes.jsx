@@ -38,43 +38,43 @@ import { useGridApiRef } from "@mui/x-data-grid";
 const initialRows = [
     {
         id: 1,
-        className: "FY BCA",
-        sections: ["A", "B", "C"],
+        className: "5th Standard",
+        sections: ["A", "B"],
         sectionCount: 3,
-        students: 156,
-        capacity: 82,
-        teacher: "P. Sharma",
-        status: "Active"
+        students: 120,
+        capacity: 40,
+        teacher: "M. Kulkarni",
+        status: "Active",
     },
     {
         id: 2,
-        className: "SY BCA",
-        sections: ["A", "B"],
-        sectionCount: 2,
-        students: 98,
-        capacity: 76,
-        teacher: "R. Patil",
-        status: "Active"
+        className: "7th Standard",
+        sections: ["A", "B", "C"],
+        sectionCount: 3,
+        students: 130,
+        capacity: 45,
+        teacher: "K. Mehta",
+        status: "Active",
     },
     {
         id: 3,
-        className: "TY BCA",
-        sections: ["A", "B", "C", "D"],
-        sectionCount: 4,
-        students: 210,
-        capacity: 91,
-        teacher: "A. Desai",
-        status: "Active"
+        className: "8th Standard",
+        sections: ["A", "B"],
+        sectionCount: 2,
+        students: 100,
+        capacity: 45,
+        teacher: "D. Verma",
+        status: "Active",
     },
     {
         id: 4,
-        className: "FY BSc",
-        sections: ["A", "B"],
-        sectionCount: 2,
-        students: 88,
-        capacity: 70,
-        teacher: "S. Joshi",
-        status: "Inactive"
+        className: "10th Standard",
+        sections: ["A", "B", "C", "D"],
+        sectionCount: 4,
+        students: 180,
+        capacity: 50,
+        teacher: "V. Chavan",
+        status: "Inactive",
     }
 ];
 
@@ -585,10 +585,10 @@ function ClassesContent() {
                             onChange={(e) => setClassFilter(e.target.value)}
                         >
                             <MenuItem value="all">All Classes</MenuItem>
-                            <MenuItem value="FY BCA">FY BCA</MenuItem>
-                            <MenuItem value="SY BCA">SY BCA</MenuItem>
-                            <MenuItem value="TY BCA">TY BCA</MenuItem>
-                            <MenuItem value="FY BSc">FY BSc</MenuItem>
+                            <MenuItem value="7th Standard">7th Standard</MenuItem>
+                            <MenuItem value="8th Standard">8th Standard</MenuItem>
+                            <MenuItem value="9th Standard">9th Standard</MenuItem>
+                            <MenuItem value="10th Standard">10th Standard</MenuItem>
                         </TextField>
                     </Col>
 

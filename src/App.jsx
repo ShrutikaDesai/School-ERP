@@ -20,6 +20,7 @@ import Exams from "./components/admin/exams/Exams.jsx";
 import Transport from "./components/admin/transport/Transport.jsx";
 import Communication from "./components/admin/communication/Communication.jsx";
 import Settings from "./components/admin/settings/Settings.jsx";
+import Profile from "./components/admin/profile/Profile.jsx";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
           <Route path="transport" element={<Transport />} />
           <Route path="communication" element={<Communication />} />
           <Route path="settings" element={<Settings />} />  
+          <Route path="profile" element={<Profile />} />
 
         </Route>
 

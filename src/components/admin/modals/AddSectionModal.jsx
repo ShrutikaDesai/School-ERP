@@ -94,8 +94,10 @@ const AddSectionModal = ({ open, onCancel, onSubmit, mode = 'add', initialValues
                 style={{ borderRadius: 8 }}
                 disabled={isViewMode}
               >
-                <Option value="FY BCA">FY BCA</Option>
-                <Option value="SY BCA">SY BCA</Option>
+                <Option value="7th Standard">7th Standard</Option>
+                <Option value="8th Standard">8th Standard</Option>
+                <Option value="9th Standard">9th Standard</Option>
+                <Option value="10th Standard">10th Standard</Option>
               </Select>
             </Form.Item>
           </Col>

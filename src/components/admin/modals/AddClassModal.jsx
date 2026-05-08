@@ -88,7 +88,7 @@ const AddClassModal = ({
               <Input
                 disabled={isView}
                 size="large"
-                placeholder="e.g. FY BCA"
+                placeholder="e.g. 7th Standard"
                 style={{ borderRadius: 8 }}
               />
             </Form.Item>

@@ -37,7 +37,7 @@ const initialRows = [
   {
     id: 1,
     sectionName: "A",
-    className: "FY BCA",
+    className: "7th Standard",
     students: 52,
     capacity: 80,
     teacher: "P. Sharma",
@@ -46,7 +46,7 @@ const initialRows = [
   {
     id: 2,
     sectionName: "B",
-    className: "FY BCA",
+    className: "8th Standard",
     students: 48,
     capacity: 75,
     teacher: "R. Patil",
@@ -55,7 +55,7 @@ const initialRows = [
   {
     id: 3,
     sectionName: "A",
-    className: "SY BCA",
+    className: "6th Standard",
     students: 50,
     capacity: 85,
     teacher: "A. Desai",
