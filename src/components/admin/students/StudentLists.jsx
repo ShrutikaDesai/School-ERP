@@ -9,7 +9,8 @@ import {
   InputAdornment,
   IconButton,
   Stack,
-  Paper
+  Paper,
+    LinearProgress,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 
@@ -136,11 +137,11 @@ const StudentLists = () => {
   };
 
   const handleViewClick = (row) => {
-    navigate(`/students/${row.id}/view`);
+    navigate(`/s-admin/students/${row.id}/view`);
   };
 
   const handleEditClick = (row) => {
-    navigate(`/students/${row.id}/edit`);
+    navigate(`/s-admin/students/${row.id}/edit`);
   };
 
   const handleConfirmDelete = () => {
@@ -172,6 +173,7 @@ const StudentLists = () => {
       "Student Name": row.name,
       "Class": row.class,
       "Section": row.section,
+        "Attendance": row.attendance ? `${row.attendance}%` : "0%",
       "Gender": row.gender,
       "Phone": row.phone,
       "Status": row.status
@@ -257,9 +259,69 @@ const StudentLists = () => {
 
     { field: "name", headerName: "Student Name", flex: 1.5 },
 
-    { field: "class", headerName: "Class", flex: 1 },
+ {
+  field: "classSection",
+  headerName: "Class / Section",
+  width: 120,
+  renderCell: (params) => (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        height: "100%",
+        fontSize: "0.875rem",
+        fontWeight: 400,
+      }}
+    >
+      {params.row.class} - {params.row.section}
+    </Box>
+  ),
+},
 
-    { field: "section", headerName: "Section", flex: 1 },
+     {
+    field: "attendance",
+    headerName: "Attendance",
+    flex: 1.5,
+    renderCell: (params) => {
+      const value = params.value || 0;
+
+      return (
+        <Box sx={{ width: "100%", px: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mb: 0.5,
+            }}
+          >
+            <Typography variant="caption" fontWeight={600}>
+              {value}%
+            </Typography>
+          </Box>
+
+          <LinearProgress
+            variant="determinate"
+            value={value}
+            sx={{
+              height: 8,
+              borderRadius: 5,
+              backgroundColor: "#E0E0E0",
+              "& .MuiLinearProgress-bar": {
+                borderRadius: 5,
+                background:
+                  value >= 75
+                    ? "linear-gradient(90deg,#4CAF50,#81C784)"
+                    : value >= 40
+                    ? "linear-gradient(90deg,#FF9800,#FFB74D)"
+                    : "linear-gradient(90deg,#F44336,#EF5350)",
+              },
+            }}
+          />
+        </Box>
+      );
+    },
+  },
+
 
     {
       field: "gender",

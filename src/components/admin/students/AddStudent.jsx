@@ -12,10 +12,13 @@ import {
   StepLabel,
   Stack,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Switch,
+  Collapse,
+  IconButton,
 } from "@mui/material";
 
-import { Row, Col, Grid as AntGrid, Upload, message } from "antd";
+import { Row, Col, Grid as AntGrid, Upload, message, Divider } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -23,6 +26,8 @@ import dayjs from "dayjs";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import SaveIcon from "@mui/icons-material/Save";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
 
 import {
   useNavigate,
@@ -96,13 +101,14 @@ const AddStudent = ({ mode = "add" }) => {
   );
 
   const navigate = useNavigate();
-
   const { id } = useParams();
 
   const isView = mode === "view";
   const isEdit = mode === "edit";
 
   const [activeStep, setActiveStep] = useState(0);
+  const [primaryGuardianOpen, setPrimaryGuardianOpen] = useState(true);
+  const [guardianOpen, setGuardianOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -120,25 +126,58 @@ const AddStudent = ({ mode = "add" }) => {
     section: "",
     admissionDate: "",
     discountType: "",
-    photo: ""
+    photo: "",
+
+    communicationConsent: false
   });
 
   /* ================= ADD THIS ALSO ================= */
 
-const tableHeadStyle = {
-  textAlign: "left",
-  padding: "14px 16px",
-  fontSize: 14,
-  color: "#64748B",
-  borderBottom: "1px solid #E5E7EB"
-};
+  const tableHeadStyle = {
+    textAlign: "left",
+    padding: "14px 16px",
+    fontSize: 14,
+    color: "#64748B",
+    borderBottom: "1px solid #E5E7EB"
+  };
 
-const tableCellStyle = {
-  padding: "16px",
-  borderBottom: "1px solid #E5E7EB",
-  fontSize: 15,
-  color: "#1F2937"
-};
+  const tableCellStyle = {
+    padding: "16px",
+    borderBottom: "1px solid #E5E7EB",
+    fontSize: 15,
+    color: "#1F2937"
+  };
+
+  const inputFieldStyle = {
+    "& .MuiOutlinedInput-root": {
+      height: 52,
+      borderRadius: "12px",
+      backgroundColor: "#fff",
+
+      "& fieldset": {
+        borderColor: "#D1D5DB",
+      },
+
+      "&:hover fieldset": {
+        borderColor: "#9CA3AF",
+      },
+
+      "&.Mui-focused fieldset": {
+        borderColor: "#6366F1",
+        borderWidth: "1.5px",
+      },
+    },
+
+    "& .MuiInputLabel-root": {
+      fontSize: 14,
+      color: "#6B7280",
+    },
+
+    "& .MuiInputBase-input": {
+      fontSize: 15,
+      color: "#111827",
+    },
+  };
 
   /* ================= LOAD STUDENT ================= */
 
@@ -407,7 +446,7 @@ const tableCellStyle = {
       );
     }
 
-    navigate("/students");
+    navigate("/s-admin/students");
   };
 
   return (
@@ -507,523 +546,1397 @@ const tableCellStyle = {
         >
 
           {/* ================= STEP 1 ================= */}
-{activeStep === 0 && (
-  <>
-    <Paper
-      elevation={0}
-      sx={{
-        p: { xs: 2, sm: 4 },
-        borderRadius: "24px",
-        border: "1px solid #E5E7EB",
-        background: "#fff"
-      }}
-    >
-      {/* TOP HEADER */}
 
-      <Row
-        gutter={[24, 24]}
-        align="middle"
-        justify="space-between"
-      >
-        {/* LEFT */}
+          {activeStep === 0 && (
+            <>
+              {/* HEADER */}
 
-        <Col xs={24} md={16}>
-          <Typography
-            sx={{
-              fontSize: 38,
-              fontWeight: 700,
-              color: "#374151"
-            }}
-          >
-            Student Details
-          </Typography>
+              <Box mb={4}>
+                <Typography
+                  sx={{
+                    fontSize: {
+                      xs: 22,
+                      sm: 22
+                    },
+                    fontWeight: 700,
+                    color: "#111827",
+                    mb: 1
+                  }}
+                >
+                  Student Details
+                </Typography>
 
-          <Typography
-            sx={{
-              mt: 1,
-              fontSize: 18,
-              color: "#6B7280"
-            }}
-          >
-            Provide the primary information for the
-            student.
-          </Typography>
-        </Col>
-
-        {/* RIGHT PHOTO */}
-
-        <Col
-          xs={24}
-          md={8}
-          style={{
-            display: "flex",
-            justifyContent: screens.xs
-              ? "flex-start"
-              : "flex-end"
-          }}
-        >
-          <Upload
-            showUploadList={false}
-            beforeUpload={handlePhotoUpload}
-            disabled={isView}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor: "pointer"
-              }}
-            >
-              <Box
-                sx={{
-                  width: 130,
-                  height: 130,
-                  borderRadius: "50%",
-                  border: "3px dashed #D1D5DB",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                  background: "#F9FAFB"
-                }}
-              >
-                {formData.photo ? (
-                  <Box
-                    component="img"
-                    src={formData.photo}
-                    alt="Student"
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover"
-                    }}
-                  />
-                ) : (
-                  <UploadOutlined
-                    style={{
-                      fontSize: 38,
-                      color: "#9CA3AF"
-                    }}
-                  />
-                )}
+                <Typography
+                  sx={{
+                    fontSize: 15,
+                    color: "#6B7280"
+                  }}
+                >
+                  Provide the primary information and residential details of the student.
+                </Typography>
               </Box>
 
-              <Typography
+              {/* COMMON INPUT STYLE */}
+
+              {/* Add this above return section
+    const inputStyle = {
+      "& .MuiOutlinedInput-root": {
+        height: 54,
+        borderRadius: "14px",
+        background: "#fff"
+      }
+    };
+    */}
+              <br></br>
+
+              {/* BASIC DETAILS */}
+
+              <Paper
+                elevation={0}
                 sx={{
-                  mt: 1.5,
-                  fontSize: 16,
-                  color: "#6B7280",
-                  fontWeight: 500
+                  p: {
+                    xs: 2,
+                    sm: 3
+                  },
+                  borderRadius: "10px",
+                  border: "1px solid #E5E7EB",
+                  mb: 4
                 }}
               >
-                Upload Photo (Opt)
-              </Typography>
-            </Box>
-          </Upload>
-        </Col>
-      </Row>
+                <Typography
+                  sx={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    letterSpacing: "1px",
+                    color: "#374151",
+                    mb: 3
+                  }}
+                >
+                  BASIC INFORMATION
+                </Typography>
 
-      {/* DIVIDER */}
+                <Row
+                  gutter={[28, 28]}
+                  align="top"
+                >
 
-      <Box
-        sx={{
-          borderBottom: "1px solid #E5E7EB",
-          my: 4
-        }}
-      />
+                  {/* LEFT FORM SECTION */}
 
-      {/* FORM */}
+                  <Col xs={24} lg={18}>
 
-      <Row gutter={[24, 24]}>
+                    <Row gutter={[20, 20]}>
 
-        {/* FIRST NAME */}
+                      {/* FIRST NAME */}
 
-        <Col xs={24} sm={12}>
-          <Typography
-            sx={{
-              mb: 1,
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#374151"
-            }}
-          >
-            First Name
-            <Box
-              component="span"
-              sx={{ color: "#EF4444" }}
-            >
-              {" "}
-              *
-            </Box>
-          </Typography>
+                      <Col xs={24} sm={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          First Name
+                          <span style={{ color: "#EF4444" }}>
+                            {" "}*
+                          </span>
+                        </Typography>
 
-          <TextField
-            fullWidth
-            placeholder="e.g. John"
-            value={formData.firstName}
-            onChange={handleChange("firstName")}
-            disabled={isView}
-          />
-        </Col>
+                        <TextField
+                          fullWidth
+                          placeholder="e.g. John"
+                          value={formData.firstName}
+                          onChange={handleChange("firstName")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
 
-        {/* LAST NAME */}
+                      {/* LAST NAME */}
 
-        <Col xs={24} sm={12}>
-          <Typography
-            sx={{
-              mb: 1,
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#374151"
-            }}
-          >
-            Last Name
-            <Box
-              component="span"
-              sx={{ color: "#EF4444" }}
-            >
-              {" "}
-              *
-            </Box>
-          </Typography>
+                      <Col xs={24} sm={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Last Name
+                          <span style={{ color: "#EF4444" }}>
+                            {" "}*
+                          </span>
+                        </Typography>
 
-          <TextField
-            fullWidth
-            placeholder="e.g. Doe"
-            value={formData.lastName}
-            onChange={handleChange("lastName")}
-            disabled={isView}
-          />
-        </Col>
+                        <TextField
+                          fullWidth
+                          placeholder="e.g. Doe"
+                          value={formData.lastName}
+                          onChange={handleChange("lastName")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
 
-        {/* GENDER */}
+                      {/* GENDER */}
 
-        <Col xs={24} sm={12}>
-          <Typography
-            sx={{
-              mb: 1,
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#374151"
-            }}
-          >
-            Gender
-            <Box
-              component="span"
-              sx={{ color: "#EF4444" }}
-            >
-              {" "}
-              *
-            </Box>
-          </Typography>
+                      <Col xs={24} sm={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Gender
+                        </Typography>
 
-          <TextField
-            select
-            fullWidth
-            value={formData.gender}
-            onChange={handleChange("gender")}
-            disabled={isView}
-            placeholder="Select Gender"
-          >
-            <MenuItem value="Male">
-              Male
-            </MenuItem>
+                        <TextField
+                          select
+                          fullWidth
+                          value={formData.gender}
+                          onChange={handleChange("gender")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        >
+                          <MenuItem value="">
+                            Select Gender
+                          </MenuItem>
 
-            <MenuItem value="Female">
-              Female
-            </MenuItem>
-          </TextField>
-        </Col>
+                          <MenuItem value="Male">
+                            Male
+                          </MenuItem>
 
-        {/* DOB */}
+                          <MenuItem value="Female">
+                            Female
+                          </MenuItem>
+                        </TextField>
+                      </Col>
 
-        <Col xs={24} sm={12}>
-          <Typography
-            sx={{
-              mb: 1,
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#374151"
-            }}
-          >
-            Date of Birth
-            <Box
-              component="span"
-              sx={{ color: "#EF4444" }}
-            >
-              {" "}
-              *
-            </Box>
-          </Typography>
+                      {/* DOB */}
 
-          <DatePicker
-            value={
-              formData.dob
-                ? dayjs(formData.dob)
-                : null
-            }
-            disabled={isView}
-            onChange={(val) =>
-              setFormData({
-                ...formData,
-                dob: val?.format("YYYY-MM-DD")
-              })
-            }
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                placeholder: "mm/dd/yyyy"
-              }
-            }}
-          />
-        </Col>
+                      <Col xs={24} sm={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Date of Birth
+                        </Typography>
 
-        {/* ADMISSION DATE */}
+                        <DatePicker
+                          value={
+                            formData.dob
+                              ? dayjs(formData.dob)
+                              : null
+                          }
+                          disabled={isView}
+                          onChange={(val) =>
+                            setFormData({
+                              ...formData,
+                              dob: val?.format("YYYY-MM-DD")
+                            })
+                          }
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              sx: inputFieldStyle
+                            }
+                          }}
+                        />
+                      </Col>
 
-        <Col xs={24} sm={12}>
-          <Typography
-            sx={{
-              mb: 1,
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#374151"
-            }}
-          >
-            Admission Date
-            <Box
-              component="span"
-              sx={{ color: "#EF4444" }}
-            >
-              {" "}
-              *
-            </Box>
-          </Typography>
+                      {/* BLOOD GROUP */}
 
-          <DatePicker
-            value={
-              formData.admissionDate
-                ? dayjs(formData.admissionDate)
-                : null
-            }
-            disabled={isView}
-            onChange={(val) =>
-              setFormData({
-                ...formData,
-                admissionDate:
-                  val?.format("YYYY-MM-DD")
-              })
-            }
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                placeholder: "mm/dd/yyyy"
-              }
-            }}
-          />
-        </Col>
+                      <Col xs={24} sm={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Blood Group
+                        </Typography>
 
-        {/* CLASS */}
+                        <TextField
+                          select
+                          fullWidth
+                          value={formData.bloodGroup}
+                          onChange={handleChange("bloodGroup")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        >
+                          <MenuItem value="">
+                            Select Blood Group
+                          </MenuItem>
 
-        <Col xs={24} sm={12}>
-          <Typography
-            sx={{
-              mb: 1,
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#374151"
-            }}
-          >
-            Grade / Class
-            <Box
-              component="span"
-              sx={{ color: "#EF4444" }}
-            >
-              {" "}
-              *
-            </Box>
-          </Typography>
+                          {bloodGroupOptions.map((group) => (
+                            <MenuItem
+                              key={group}
+                              value={group}
+                            >
+                              {group}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      </Col>
 
-          <TextField
-            select
-            fullWidth
-            value={formData.class}
-            onChange={handleChange("class")}
-            disabled={isView}
-          >
-            {classOptions.map((className) => (
-              <MenuItem
-                key={className}
-                value={className}
+                      {/* EMAIL */}
+
+                      <Col xs={24} sm={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Student Email
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="student@example.com"
+                          value={formData.studentEmail || ""}
+                          onChange={handleChange("studentEmail")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* PHONE */}
+
+                      <Col xs={24} sm={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Student Phone
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="+91 9876543210"
+                          value={formData.studentPhone || ""}
+                          onChange={handleChange("studentPhone")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                    </Row>
+
+                  </Col>
+
+                  {/* RIGHT PHOTO SECTION */}
+
+                  <Col
+                    xs={24}
+                    lg={6}
+                  >
+                    <Box
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: {
+                          xs: "flex-start",
+                          lg: "flex-end"
+                        }
+                      }}
+                    >
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          width: "100%",
+                          maxWidth: 260,
+                          border: "1px solid #E5E7EB",
+                          borderRadius: "20px",
+                          p: 3,
+                          textAlign: "center",
+                          background: "#FAFAFA"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 700,
+                            color: "#374151",
+                            mb: 3
+                          }}
+                        >
+                          Student Photo
+                        </Typography>
+
+                        <Upload
+                          showUploadList={false}
+                          beforeUpload={handlePhotoUpload}
+                          disabled={isView}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              cursor: isView
+                                ? "default"
+                                : "pointer"
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                width: 150,
+                                height: 150,
+                                borderRadius: "50%",
+                                border: "2px dashed #D1D5DB",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                overflow: "hidden",
+                                background: "#FFFFFF",
+                                transition: "0.3s",
+
+                                "&:hover": {
+                                  borderColor: "#6366F1",
+                                  background: "#F5F7FF"
+                                }
+                              }}
+                            >
+                              {formData.photo ? (
+                                <Box
+                                  component="img"
+                                  src={formData.photo}
+                                  alt="Student"
+                                  sx={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover"
+                                  }}
+                                />
+                              ) : (
+                                <UploadOutlined
+                                  style={{
+                                    fontSize: 40,
+                                    color: "#9CA3AF"
+                                  }}
+                                />
+                              )}
+                            </Box>
+
+                            <Typography
+                              sx={{
+                                mt: 2,
+                                fontSize: 14,
+                                color: "#6B7280",
+                                fontWeight: 500
+                              }}
+                            >
+                              Click to upload
+                            </Typography>
+
+                            <Typography
+                              sx={{
+                                fontSize: 12,
+                                color: "#9CA3AF",
+                                mt: 0.5
+                              }}
+                            >
+                              PNG, JPG up to 5MB
+                            </Typography>
+                          </Box>
+                        </Upload>
+                      </Paper>
+                    </Box>
+                  </Col>
+
+                </Row>
+              </Paper>
+
+              {/* ADDRESS SECTION */}
+
+              <Paper
+                elevation={0}
+                sx={{
+                  p: {
+                    xs: 2,
+                    sm: 3
+                  },
+                  borderRadius: "10px",
+                  border: "1px solid #E5E7EB"
+                }}
               >
-                {className}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Col>
+                <Typography
+                  sx={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    letterSpacing: "1px",
+                    color: "#374151",
+                    mb: 3
+                  }}
+                >
+                  RESIDENTIAL ADDRESS
+                </Typography>
 
-        {/* SECTION */}
+                <Row gutter={[20, 20]}>
 
-        <Col xs={24} sm={12}>
-          <Typography
-            sx={{
-              mb: 1,
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#374151"
-            }}
-          >
-            Section
-            <Box
-              component="span"
-              sx={{ color: "#EF4444" }}
-            >
-              {" "}
-              *
-            </Box>
-          </Typography>
+                  {/* ADDRESS 1 */}
 
-          <TextField
-            select
-            fullWidth
-            value={formData.section}
-            onChange={handleChange("section")}
-            disabled={isView}
-          >
-            {sectionOptions.map((sec) => (
-              <MenuItem
-                key={sec}
-                value={sec}
-              >
-                Section {sec}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Col>
+                  <Col xs={24}>
+                    <Typography
+                      sx={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#374151",
+                        mb: 1
+                      }}
+                    >
+                      Address Line 1
+                      <span style={{ color: "#EF4444" }}>
+                        {" "}*
+                      </span>
+                    </Typography>
 
-        {/* BLOOD GROUP */}
+                    <TextField
+                      fullWidth
+                      placeholder="Start typing to search address..."
+                      value={formData.addressLine1 || ""}
+                      onChange={handleChange("addressLine1")}
+                      disabled={isView}
+                      sx={inputFieldStyle}
+                    />
+                  </Col>
 
-        <Col xs={24} sm={12}>
-          <Typography
-            sx={{
-              mb: 1,
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#374151"
-            }}
-          >
-            Blood Group
-          </Typography>
+                  {/* ADDRESS 2 */}
 
-          <TextField
-            select
-            fullWidth
-            value={formData.bloodGroup}
-            onChange={handleChange("bloodGroup")}
-            disabled={isView}
-          >
-            {bloodGroupOptions.map((group) => (
-              <MenuItem
-                key={group}
-                value={group}
-              >
-                {group}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Col>
+                  <Col xs={24}>
+                    <Typography
+                      sx={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#374151",
+                        mb: 1
+                      }}
+                    >
+                      Address Line 2
 
-      </Row>
-    </Paper>
-  </>
-)}
+                      <span
+                        style={{
+                          color: "#6B7280",
+                          fontWeight: 400
+                        }}
+                      >
+                        {" "} (Optional)
+                      </span>
+                    </Typography>
+
+                    <TextField
+                      fullWidth
+                      placeholder="Apartment, suite, unit, etc."
+                      value={formData.addressLine2 || ""}
+                      onChange={handleChange("addressLine2")}
+                      disabled={isView}
+                      sx={inputFieldStyle}
+                    />
+                  </Col>
+
+                  {/* CITY */}
+
+                  <Col xs={24} sm={12}>
+                    <Typography
+                      sx={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#374151",
+                        mb: 1
+                      }}
+                    >
+                      City
+                    </Typography>
+
+                    <TextField
+                      fullWidth
+                      placeholder="e.g. Pune"
+                      value={formData.city || ""}
+                      onChange={handleChange("city")}
+                      disabled={isView}
+                      sx={inputFieldStyle}
+                    />
+                  </Col>
+
+                  {/* STATE */}
+
+                  <Col xs={24} sm={12}>
+                    <Typography
+                      sx={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#374151",
+                        mb: 1
+                      }}
+                    >
+                      State / Province
+                    </Typography>
+
+                    <TextField
+                      select
+                      fullWidth
+                      value={formData.state || ""}
+                      onChange={handleChange("state")}
+                      disabled={isView}
+                      sx={inputFieldStyle}
+                    >
+                      <MenuItem value="">
+                        Select State
+                      </MenuItem>
+
+                      <MenuItem value="Maharashtra">
+                        Maharashtra
+                      </MenuItem>
+
+                      <MenuItem value="Gujarat">
+                        Gujarat
+                      </MenuItem>
+
+                      <MenuItem value="Karnataka">
+                        Karnataka
+                      </MenuItem>
+                    </TextField>
+                  </Col>
+
+                  {/* ZIP */}
+
+                  <Col xs={24} sm={12}>
+                    <Typography
+                      sx={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#374151",
+                        mb: 1
+                      }}
+                    >
+                      ZIP / Postal Code
+                    </Typography>
+
+                    <TextField
+                      fullWidth
+                      placeholder="e.g. 411001"
+                      value={formData.zipCode || ""}
+                      onChange={handleChange("zipCode")}
+                      disabled={isView}
+                      sx={inputFieldStyle}
+                    />
+                  </Col>
+
+                  {/* COUNTRY */}
+
+                  <Col xs={24} sm={12}>
+                    <Typography
+                      sx={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#374151",
+                        mb: 1
+                      }}
+                    >
+                      Country
+                    </Typography>
+
+                    <TextField
+                      select
+                      fullWidth
+                      value={formData.country || "India"}
+                      onChange={handleChange("country")}
+                      disabled={isView}
+                      sx={inputFieldStyle}
+                    >
+                      <MenuItem value="India">
+                        India
+                      </MenuItem>
+
+                      <MenuItem value="United States">
+                        United States
+                      </MenuItem>
+
+                      <MenuItem value="Canada">
+                        Canada
+                      </MenuItem>
+                    </TextField>
+                  </Col>
+
+                </Row>
+              </Paper>
+            </>
+          )}
+
+          {/* ================= STEP 2 ================= */}
 
           {/* ================= STEP 2 ================= */}
 
           {activeStep === 1 && (
             <>
-              <Typography
-                fontWeight={600}
-                mb={3}
+              {/* HEADER */}
+
+              <Box mb={3}>
+                <Typography
+                  sx={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: "#374151"
+                  }}
+                >
+                  Guardian Information
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontSize: 14,
+                    color: "#6B7280",
+                    mt: 0.5
+                  }}
+                >
+                  Add primary and secondary guardian details.
+                </Typography>
+              </Box>
+
+              {/* LINE */}
+
+              <Box
+                sx={{
+                  borderBottom: "1px solid #E5E7EB",
+                  mb: 3
+                }}
+              />
+
+              {/* PRIMARY HEADER */}
+
+              {/* ================= PRIMARY GUARDIAN ================= */}
+
+              <Box
+                sx={{
+                  mt: 4,
+                  border: "1px solid #E5E7EB",
+                  borderRadius: 1,
+                  overflow: "hidden",
+                  background: "#fff"
+                }}
               >
-                Guardian Info
-              </Typography>
 
-              <Row gutter={[16, 16]}>
+                {/* HEADER */}
 
-                <Col xs={24} sm={12}>
-                  <TextField
-                    fullWidth
-                    label="Father Name"
-                    value={
-                      formData.fatherName
-                    }
-                    onChange={handleChange(
-                      "fatherName"
+                <Box
+                  sx={{
+                    px: 2.5,
+                    py: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                    borderBottom: primaryGuardianOpen
+                      ? "1px solid #E5E7EB"
+                      : "none"
+                  }}
+                  onClick={() =>
+                    setPrimaryGuardianOpen(!primaryGuardianOpen)
+                  }
+                >
+
+                  {/* LEFT */}
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5
+                    }}
+                  >
+
+                    {/* NUMBER */}
+
+                    <Box
+                      sx={{
+                        minWidth: 34,
+                        width: 34,
+                        height: 34,
+                        borderRadius: "50%",
+                        background: "#EEF2FF",
+                        color: "#4F46E5",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 14,
+                        fontWeight: 700
+                      }}
+                    >
+                      1
+                    </Box>
+
+                    {/* TITLE */}
+
+                    <Typography
+                      sx={{
+                        fontSize: {
+                          xs: 17,
+                          sm: 20
+                        },
+                        fontWeight: 700,
+                        color: "#374151",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        flexWrap: "wrap"
+                      }}
+                    >
+                      Primary Guardian
+
+                      <Box
+                        component="span"
+                        sx={{
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "#4F46E5",
+                          background: "#EEF2FF",
+                          px: 1.8,
+                          py: 0.7,
+                          borderRadius: "30px"
+                        }}
+                      >
+                        Primary Contact
+                      </Box>
+                    </Typography>
+
+                  </Box>
+
+                  {/* ARROW */}
+
+                  <IconButton size="small">
+
+                    {primaryGuardianOpen ? (
+                      <KeyboardArrowUpRoundedIcon />
+                    ) : (
+                      <KeyboardArrowDownRoundedIcon />
                     )}
-                    disabled={isView}
-                  />
-                </Col>
 
-                <Col xs={24} sm={12}>
-                  <TextField
-                    fullWidth
-                    label="Mother Name"
-                    value={
-                      formData.motherName
-                    }
-                    onChange={handleChange(
-                      "motherName"
+                  </IconButton>
+
+                </Box>
+
+                {/* BODY */}
+
+                <Collapse in={primaryGuardianOpen}>
+
+                  <Box sx={{ p: 3 }}>
+
+                    <Row gutter={[16, 20]}>
+
+                      {/* GUARDIAN NAME */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Guardian Name
+                          <span style={{ color: "#EF4444" }}>
+                            {" "}*
+                          </span>
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="e.g. John Doe"
+                          value={formData.fatherName}
+                          onChange={handleChange("fatherName")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* RELATIONSHIP */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Relationship
+                          <span style={{ color: "#EF4444" }}>
+                            {" "}*
+                          </span>
+                        </Typography>
+
+                        <TextField
+                          select
+                          fullWidth
+                          value={formData.relationship || ""}
+                          onChange={handleChange("relationship")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        >
+                          <MenuItem value="">
+                            Select Relationship
+                          </MenuItem>
+
+                          <MenuItem value="Father">
+                            Father
+                          </MenuItem>
+
+                          <MenuItem value="Mother">
+                            Mother
+                          </MenuItem>
+
+                          <MenuItem value="Guardian">
+                            Guardian
+                          </MenuItem>
+                        </TextField>
+                      </Col>
+
+                      {/* PHONE */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Phone Number
+                          <span style={{ color: "#EF4444" }}>
+                            {" "}*
+                          </span>
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="+91 9876543210"
+                          value={formData.phone}
+                          onChange={handleChange("phone")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* EMAIL */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Email Address
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="guardian@example.com"
+                          value={formData.email}
+                          onChange={handleChange("email")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* OCCUPATION */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Occupation
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="e.g. Software Engineer"
+                          value={formData.occupation || ""}
+                          onChange={handleChange("occupation")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* COMPANY */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Employer / Company
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="e.g. Acme Corp"
+                          value={formData.company || ""}
+                          onChange={handleChange("company")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* ID TYPE */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          ID Proof Type
+                        </Typography>
+
+                        <TextField
+                          select
+                          fullWidth
+                          value={formData.idType || ""}
+                          onChange={handleChange("idType")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        >
+                          <MenuItem value="">
+                            Select ID Type
+                          </MenuItem>
+
+                          <MenuItem value="Aadhar">
+                            Aadhar Card
+                          </MenuItem>
+
+                          <MenuItem value="PAN">
+                            PAN Card
+                          </MenuItem>
+
+                          <MenuItem value="Passport">
+                            Passport
+                          </MenuItem>
+                        </TextField>
+                      </Col>
+
+                      {/* ID NUMBER */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          ID Number
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="Enter ID Number"
+                          value={formData.idNumber || ""}
+                          onChange={handleChange("idNumber")}
+                          disabled={isView}
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* CHECKBOX */}
+
+                      <Col xs={24}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            flexWrap: "nowrap"
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.sameAddress || false}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                sameAddress: e.target.checked
+                              })
+                            }
+                            style={{
+                              width: 16,
+                              height: 16,
+                              accentColor: "#A855F7",
+                              cursor: "pointer",
+                              margin: 0,
+                              flexShrink: 0
+                            }}
+                          />
+
+                          <Typography
+                            sx={{
+                              fontSize: 14,
+                              color: "#4B5563",
+                              lineHeight: 1.2,
+                              whiteSpace: "nowrap"
+                            }}
+                          >
+                            Address is same as student's residential address
+                          </Typography>
+                        </Box>
+                      </Col>
+
+                    </Row>
+
+                  </Box>
+
+                </Collapse>
+
+              </Box>
+              {/* SECONDARY */}
+
+              <Box
+                sx={{
+                  mt: 4,
+                  border: "1px solid #E5E7EB",
+                  borderRadius: 1,
+                  overflow: "hidden",
+                  background: "#fff"
+                }}
+              >
+
+                {/* HEADER */}
+
+                <Box
+                  sx={{
+                    px: 2.5,
+                    py: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                    borderBottom: guardianOpen
+                      ? "1px solid #E5E7EB"
+                      : "none"
+                  }}
+                  onClick={() =>
+                    setGuardianOpen(!guardianOpen)
+                  }
+                >
+
+                  {/* LEFT */}
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5
+                    }}
+                  >
+
+                    {/* NUMBER */}
+
+                    <Box
+                      sx={{
+                        minWidth: 34,
+                        width: 34,
+                        height: 34,
+                        borderRadius: "50%",
+                        background: "#F3F4F6",
+                        color: "#6B7280",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 14,
+                        fontWeight: 700
+                      }}
+                    >
+                      2
+                    </Box>
+
+                    {/* TITLE */}
+
+                    <Typography
+                      sx={{
+                        fontSize: {
+                          xs: 17,
+                          sm: 20
+                        },
+                        fontWeight: 700,
+                        color: "#374151",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        flexWrap: "wrap"
+                      }}
+                    >
+                      Secondary Guardian
+
+                      <Box
+                        component="span"
+                        sx={{
+                          fontSize: 15,
+                          fontWeight: 400,
+                          color: "#6B7280"
+                        }}
+                      >
+                        (Optional)
+                      </Box>
+                    </Typography>
+
+                  </Box>
+
+                  {/* ARROW */}
+
+                  <IconButton size="small">
+
+                    {guardianOpen ? (
+                      <KeyboardArrowUpRoundedIcon />
+                    ) : (
+                      <KeyboardArrowDownRoundedIcon />
                     )}
-                    disabled={isView}
-                  />
-                </Col>
 
-                <Col xs={24} sm={12}>
-                  <TextField
-                    fullWidth
-                    label="Phone"
-                    value={
-                      formData.phone
+                  </IconButton>
+
+                </Box>
+
+                {/* BODY */}
+
+                <Collapse in={guardianOpen}>
+
+                  <Box sx={{ p: 3 }}>
+
+                    <Row gutter={[16, 20]}>
+
+                      {/* GUARDIAN NAME */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Guardian Name
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="e.g. Jane Doe"
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* RELATIONSHIP */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Relationship
+                        </Typography>
+
+                        <TextField
+                          select
+                          fullWidth
+                          defaultValue=""
+                          sx={inputFieldStyle}
+                        >
+                          <MenuItem value="">
+                            Select Relationship
+                          </MenuItem>
+
+                          <MenuItem value="uncle">
+                            Uncle
+                          </MenuItem>
+
+                          <MenuItem value="aunt">
+                            Aunt
+                          </MenuItem>
+
+                          <MenuItem value="brother">
+                            Brother
+                          </MenuItem>
+                        </TextField>
+                      </Col>
+
+                      {/* PHONE NUMBER */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Phone Number
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="+1 (555) 000-0000"
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                      {/* EMAIL ADDRESS */}
+
+                      <Col xs={24} md={12}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#374151",
+                            mb: 1
+                          }}
+                        >
+                          Email Address
+                        </Typography>
+
+                        <TextField
+                          fullWidth
+                          placeholder="guardian@example.com"
+                          sx={inputFieldStyle}
+                        />
+                      </Col>
+
+                    </Row>
+
+                    {/* SWITCH */}
+
+                    <Box
+                      sx={{
+                        mt: 4,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                      }}
+                    >
+
+                      <Typography
+                        sx={{
+                          fontSize: 16,
+                          fontWeight: 500,
+                          color: "#374151"
+                        }}
+                      >
+                        Mark as Primary Contact
+                      </Typography>
+
+                      <Switch />
+
+                    </Box>
+
+                  </Box>
+
+                </Collapse>
+
+              </Box>
+
+              {/* CONSENT */}
+
+              <Box
+                sx={{
+                  mt: 4,
+                  border: "1px solid #E5E7EB",
+                  borderRadius: "5px",
+                  background: "#F9FAFB",
+                  p: 2.5
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 1.5
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.communicationConsent}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        communicationConsent: e.target.checked
+                      })
                     }
-                    onChange={handleChange(
-                      "phone"
-                    )}
-                    disabled={isView}
+                    style={{
+                      marginTop: 3,
+                      width: 18,
+                      height: 18,
+                      accentColor: "#A855F7",
+                      cursor: "pointer"
+                    }}
                   />
-                </Col>
 
-                <Col xs={24} sm={12}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    value={
-                      formData.email
-                    }
-                    onChange={handleChange(
-                      "email"
-                    )}
-                    disabled={isView}
-                  />
-                </Col>
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#374151",
+                        lineHeight: 1.2,
+                        mb: 0.5
+                      }}
+                    >
+                      Communication Consent
+                    </Typography>
 
-                <Col xs={24}>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    label="Address"
-                    value={
-                      formData.address
-                    }
-                    onChange={handleChange(
-                      "address"
-                    )}
-                    disabled={isView}
-                  />
-                </Col>
-
-              </Row>
+                    <Typography
+                      sx={{
+                        fontSize: 13,
+                        color: "#6B7280",
+                        lineHeight: 1.6,
+                        maxWidth: "720px"
+                      }}
+                    >
+                      I agree to receive academic updates,
+                      fee reminders, and emergency
+                      notifications via SMS and Email for
+                      this student.
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
             </>
           )}
 
@@ -1031,91 +1944,186 @@ const tableCellStyle = {
 
           {activeStep === 2 && (
             <>
-              <Typography
-                fontWeight={600}
-                mb={3}
+              {/* HEADER */}
+
+              <Box mb={3}>
+                <Typography
+                  sx={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: "#374151"
+                  }}
+                >
+                  Academic Information
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontSize: 14,
+                    color: "#6B7280",
+                    mt: 0.5
+                  }}
+                >
+                  Add academic and admission related details.
+                </Typography>
+              </Box>
+
+              {/* LINE */}
+
+              <Box
+                sx={{
+                  borderBottom: "1px solid #E5E7EB",
+                  mb: 3
+                }}
+              />
+
+              {/* SECTION HEADER */}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                  mb: 3
+                }}
               >
-                Academic Info
-              </Typography>
+              </Box>
+
+              {/* FORM */}
 
               <Row gutter={[16, 16]}>
 
+                {/* ADMISSION NUMBER */}
+
                 <Col xs={24} sm={12}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Admission Number
+                    <span style={{ color: "#EF4444" }}>
+                      {" "}*
+                    </span>
+                  </Typography>
+
                   <TextField
                     fullWidth
-                    label="Admission Number"
-                    value={
-                      formData.admissionNumber
-                    }
-                    onChange={handleChange(
-                      "admissionNumber"
-                    )}
+                    size="small"
+                    placeholder="Enter admission number"
+                    value={formData.admissionNumber}
+                    onChange={handleChange("admissionNumber")}
                     disabled={isView}
+                    sx={inputFieldStyle}
                   />
                 </Col>
 
+                {/* CLASS */}
+
                 <Col xs={24} sm={12}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Class
+                    <span style={{ color: "#EF4444" }}>
+                      {" "}*
+                    </span>
+                  </Typography>
+
                   <TextField
                     select
                     fullWidth
-                    label="Class"
-                    value={
-                      formData.class
-                    }
-                    onChange={handleChange(
-                      "class"
-                    )}
+                    size="small"
+                    value={formData.class}
+                    onChange={handleChange("class")}
                     disabled={isView}
+                    sx={inputFieldStyle}
                   >
-                    {classOptions.map(
-                      (className) => (
-                        <MenuItem
-                          key={className}
-                          value={
-                            className
-                          }
-                        >
-                          {className}
-                        </MenuItem>
-                      )
-                    )}
+                    <MenuItem value="">
+                      Select Class
+                    </MenuItem>
+
+                    {classOptions.map((className) => (
+                      <MenuItem
+                        key={className}
+                        value={className}
+                      >
+                        {className}
+                      </MenuItem>
+                    ))}
                   </TextField>
                 </Col>
 
+                {/* SECTION */}
+
                 <Col xs={24} sm={12}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Section
+                    <span style={{ color: "#EF4444" }}>
+                      {" "}*
+                    </span>
+                  </Typography>
+
                   <TextField
                     select
                     fullWidth
-                    label="Section"
-                    value={
-                      formData.section
-                    }
-                    onChange={handleChange(
-                      "section"
-                    )}
+                    size="small"
+                    value={formData.section}
+                    onChange={handleChange("section")}
                     disabled={isView}
+                    sx={inputFieldStyle}
                   >
-                    {sectionOptions.map(
-                      (sec) => (
-                        <MenuItem
-                          key={sec}
-                          value={sec}
-                        >
-                          Section {sec}
-                        </MenuItem>
-                      )
-                    )}
+                    <MenuItem value="">
+                      Select Section
+                    </MenuItem>
+
+                    {sectionOptions.map((sec) => (
+                      <MenuItem
+                        key={sec}
+                        value={sec}
+                      >
+                        Section {sec}
+                      </MenuItem>
+                    ))}
                   </TextField>
                 </Col>
 
+                {/* ADMISSION DATE */}
+
                 <Col xs={24} sm={12}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Admission Date
+                    <span style={{ color: "#EF4444" }}>
+                      {" "}*
+                    </span>
+                  </Typography>
+
                   <DatePicker
-                    label="Admission Date"
                     value={
                       formData.admissionDate
-                        ? dayjs(
-                          formData.admissionDate
-                        )
+                        ? dayjs(formData.admissionDate)
                         : null
                     }
                     disabled={isView}
@@ -1123,31 +2131,41 @@ const tableCellStyle = {
                       setFormData({
                         ...formData,
                         admissionDate:
-                          val?.format(
-                            "YYYY-MM-DD"
-                          )
+                          val?.format("YYYY-MM-DD")
                       })
                     }
                     slotProps={{
                       textField: {
-                        fullWidth: true
+                        fullWidth: true,
+                        size: "small",
+                        sx: inputFieldStyle
                       }
                     }}
                   />
                 </Col>
 
-                <Col xs={24} >
+                {/* DISCOUNT TYPE */}
+
+                <Col xs={24}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Discount Type
+                  </Typography>
+
                   <TextField
                     select
                     fullWidth
-                    label="Discount Type"
-                    value={
-                      formData.discountType
-                    }
-                    onChange={handleChange(
-                      "discountType"
-                    )}
+                    size="small"
+                    value={formData.discountType}
+                    onChange={handleChange("discountType")}
                     disabled={isView}
+                    sx={inputFieldStyle}
                   >
                     <MenuItem value="none">
                       No Discount
@@ -1166,524 +2184,592 @@ const tableCellStyle = {
               </Row>
             </>
           )}
-          
+
           {/* ================= STEP 4 ================= */}
 
 
-{activeStep === 3 && (
-  <>
-    {/* HEADER */}
+          {activeStep === 3 && (
+            <>
+              {/* HEADER */}
 
-    <Box mb={3}>
-      <Typography
-        variant="h6"
-        fontWeight={700}
-        color="text.primary"
-      >
-        Fees Configuration
-      </Typography>
+              <Box mb={3}>
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  color="text.primary"
+                >
+                  Fees Configuration
+                </Typography>
 
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        mt={0.5}
-      >
-        Configure billing, installments and fee summary.
-      </Typography>
-    </Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  mt={0.5}
+                >
+                  Configure billing, installments and fee summary.
+                </Typography>
+              </Box>
 
-    {/* TOP FIELDS */}
+              <Divider sx={{ mb: 3 }} />
 
-    <Row gutter={[16, 16]}>
+              {/* TOP FIELDS */}
 
-      <Col xs={24} sm={12}>
-        <TextField
-          select
-          fullWidth
-          label="Academic Year"
-          value={formData.academicYear || ""}
-          onChange={handleChange("academicYear")}
-        >
-          <MenuItem value="2024-2025">
-            2024 - 2025
-          </MenuItem>
+              <Row gutter={[16, 16]}>
 
-          <MenuItem value="2025-2026">
-            2025 - 2026
-          </MenuItem>
-        </TextField>
-      </Col>
+                <Col xs={24} sm={12}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Academic Year
+                    <span style={{ color: "#EF4444" }}>
+                      {" "}*
+                    </span>
+                  </Typography>
 
-      <Col xs={24} sm={12}>
-        <TextField
-          select
-          fullWidth
-          label="Fee Group"
-          value={formData.feeGroup || ""}
-          onChange={handleChange("feeGroup")}
-        >
-          <MenuItem value="standard">
-            Standard Fees
-          </MenuItem>
+                  <TextField
+                    select
+                    fullWidth
+                    value={formData.academicYear || ""}
+                    onChange={handleChange("academicYear")}
+                    sx={inputFieldStyle}
+                  >
+                    <MenuItem value="">
+                      Select Academic Year
+                    </MenuItem>
 
-          <MenuItem value="hostel">
-            Hostel Fees
-          </MenuItem>
-        </TextField>
-      </Col>
+                    <MenuItem value="2024-2025">
+                      2024 - 2025
+                    </MenuItem>
 
-      <Col xs={24} sm={12}>
-        <TextField
-          select
-          fullWidth
-          label="Scholarship"
-          value={formData.scholarship || ""}
-          onChange={handleChange("scholarship")}
-        >
-          <MenuItem value="none">
-            No Scholarship
-          </MenuItem>
+                    <MenuItem value="2025-2026">
+                      2025 - 2026
+                    </MenuItem>
+                  </TextField>
+                </Col>
 
-          <MenuItem value="sibling">
-            Sibling Discount
-          </MenuItem>
+                <Col xs={24} sm={12}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Fee Group
+                    <span style={{ color: "#EF4444" }}>
+                      {" "}*
+                    </span>
+                  </Typography>
 
-          <MenuItem value="staff">
-            Staff Discount
-          </MenuItem>
-        </TextField>
-      </Col>
+                  <TextField
+                    select
+                    fullWidth
+                    value={formData.feeGroup || ""}
+                    onChange={handleChange("feeGroup")}
+                    sx={inputFieldStyle}
+                  >
+                    <MenuItem value="">
+                      Select Fee Group
+                    </MenuItem>
 
-      <Col xs={24} sm={12}>
-        <TextField
-          select
-          fullWidth
-          label="Transport / Hostel"
-          value={formData.addons || ""}
-          onChange={handleChange("addons")}
-        >
-          <MenuItem value="none">
-            None
-          </MenuItem>
+                    <MenuItem value="standard">
+                      Standard Fees
+                    </MenuItem>
 
-          <MenuItem value="transport">
-            Transport
-          </MenuItem>
+                    <MenuItem value="hostel">
+                      Hostel Fees
+                    </MenuItem>
+                  </TextField>
+                </Col>
 
-          <MenuItem value="hostel">
-            Hostel
-          </MenuItem>
-        </TextField>
-      </Col>
+                <Col xs={24} sm={12}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Scholarship
+                  </Typography>
 
-    </Row>
+                  <TextField
+                    select
+                    fullWidth
+                    value={formData.scholarship || ""}
+                    onChange={handleChange("scholarship")}
+                    sx={inputFieldStyle}
+                  >
+                    <MenuItem value="">
+                      Select Scholarship
+                    </MenuItem>
 
-    {/* INSTALLMENT PLAN */}
+                    <MenuItem value="none">
+                      No Scholarship
+                    </MenuItem>
 
-    <Paper
-      sx={{
-        mt: 4,
-        borderRadius: 1,
-        overflow: "hidden",
-        border: "1px solid #E5E7EB"
-      }}
-    >
+                    <MenuItem value="sibling">
+                      Sibling Discount
+                    </MenuItem>
 
-      {/* TOP BAR */}
+                    <MenuItem value="staff">
+                      Staff Discount
+                    </MenuItem>
+                  </TextField>
+                </Col>
 
-      <Box
-        sx={{
-          p: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          borderBottom: "1px solid #E5E7EB",
-          flexWrap: "wrap",
-          gap: 2
-        }}
-      >
-        <Typography fontWeight={700}>
-          Installment Plan
-        </Typography>
+                <Col xs={24} sm={12}>
+                  <Typography
+                    sx={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: "#374151",
+                      mb: 1
+                    }}
+                  >
+                    Transport / Hostel
+                  </Typography>
 
-        <Stack direction="row" spacing={1}>
-          <Button
-            variant="outlined"
-            size="small"
-          >
-            Auto Split
-          </Button>
+                  <TextField
+                    select
+                    fullWidth
+                    value={formData.addons || ""}
+                    onChange={handleChange("addons")}
+                    sx={inputFieldStyle}
+                  >
+                    <MenuItem value="">
+                      Select Option
+                    </MenuItem>
 
-          <Button
-            variant="contained"
-            size="small"
-          >
-            Add Row
-          </Button>
-        </Stack>
-      </Box>
+                    <MenuItem value="none">
+                      None
+                    </MenuItem>
 
-      {/* TABLE */}
+                    <MenuItem value="transport">
+                      Transport
+                    </MenuItem>
 
-      <Box sx={{ overflowX: "auto" }}>
+                    <MenuItem value="hostel">
+                      Hostel
+                    </MenuItem>
+                  </TextField>
+                </Col>
 
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse"
-          }}
-        >
-          <thead
-            style={{
-              background: "#F8FAFC"
-            }}
-          >
-            <tr>
-              <th
-                style={tableHeadStyle}
+              </Row>
+
+              {/* INSTALLMENT PLAN */}
+
+              <Paper
+                sx={{
+                  mt: 4,
+                  borderRadius: 1,
+                  overflow: "hidden",
+                  border: "1px solid #E5E7EB"
+                }}
               >
-                Installment
-              </th>
 
-              <th
-                style={tableHeadStyle}
-              >
-                Due Date
-              </th>
+                {/* TOP BAR */}
 
-              <th
-                style={tableHeadStyle}
-              >
-                Amount
-              </th>
-
-              <th
-                style={tableHeadStyle}
-              >
-                Status
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            <tr>
-              <td style={tableCellStyle}>
-                Term 1 Fee
-              </td>
-
-              <td style={tableCellStyle}>
-                08/01/2024
-              </td>
-
-              <td style={tableCellStyle}>
-                ₹ 15,000
-              </td>
-
-              <td style={tableCellStyle}>
                 <Box
                   sx={{
-                    background: "#E8F5E9",
-                    color: "#2E7D32",
-                    px: 1.5,
-                    py: 0.5,
-                    borderRadius: 1,
-                    display: "inline-block",
-                    fontSize: 13,
-                    fontWeight: 600
+                    p: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottom: "1px solid #E5E7EB",
+                    flexWrap: "wrap",
+                    gap: 2
                   }}
                 >
-                  Planned
+                  <Typography fontWeight={700}>
+                    Installment Plan
+                  </Typography>
+
+                  <Stack direction="row" spacing={1}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                    >
+                      Auto Split
+                    </Button>
+
+                    <Button
+                      variant="contained"
+                      size="small"
+                    >
+                      Add Row
+                    </Button>
+                  </Stack>
                 </Box>
-              </td>
-            </tr>
 
-            <tr>
-              <td style={tableCellStyle}>
-                Term 2 Fee
-              </td>
+                {/* TABLE */}
 
-              <td style={tableCellStyle}>
-                12/01/2024
-              </td>
+                <Box sx={{ overflowX: "auto" }}>
 
-              <td style={tableCellStyle}>
-                ₹ 15,000
-              </td>
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse"
+                    }}
+                  >
+                    <thead
+                      style={{
+                        background: "#F8FAFC"
+                      }}
+                    >
+                      <tr>
+                        <th
+                          style={tableHeadStyle}
+                        >
+                          Installment
+                        </th>
 
-              <td style={tableCellStyle}>
+                        <th
+                          style={tableHeadStyle}
+                        >
+                          Due Date
+                        </th>
+
+                        <th
+                          style={tableHeadStyle}
+                        >
+                          Amount
+                        </th>
+
+                        <th
+                          style={tableHeadStyle}
+                        >
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+
+                      <tr>
+                        <td style={tableCellStyle}>
+                          Term 1 Fee
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          08/01/2024
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          ₹ 15,000
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          <Box
+                            sx={{
+                              background: "#E8F5E9",
+                              color: "#2E7D32",
+                              px: 1.5,
+                              py: 0.5,
+                              borderRadius: 1,
+                              display: "inline-block",
+                              fontSize: 13,
+                              fontWeight: 600
+                            }}
+                          >
+                            Planned
+                          </Box>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style={tableCellStyle}>
+                          Term 2 Fee
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          12/01/2024
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          ₹ 15,000
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          <Box
+                            sx={{
+                              background: "#E8F5E9",
+                              color: "#2E7D32",
+                              px: 1.5,
+                              py: 0.5,
+                              borderRadius: 1,
+                              display: "inline-block",
+                              fontSize: 13,
+                              fontWeight: 600
+                            }}
+                          >
+                            Planned
+                          </Box>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style={tableCellStyle}>
+                          Term 3 Fee
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          04/01/2025
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          ₹ 15,000
+                        </td>
+
+                        <td style={tableCellStyle}>
+                          <Box
+                            sx={{
+                              background: "#E8F5E9",
+                              color: "#2E7D32",
+                              px: 1.5,
+                              py: 0.5,
+                              borderRadius: 1,
+                              display: "inline-block",
+                              fontSize: 13,
+                              fontWeight: 600
+                            }}
+                          >
+                            Planned
+                          </Box>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+
+                </Box>
+
+                {/* TOTAL */}
+
                 <Box
                   sx={{
-                    background: "#E8F5E9",
-                    color: "#2E7D32",
-                    px: 1.5,
-                    py: 0.5,
-                    borderRadius: 1,
-                    display: "inline-block",
-                    fontSize: 13,
-                    fontWeight: 600
+                    p: 2,
+                    borderTop: "1px solid #E5E7EB",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    background: "#FAFAFA"
                   }}
                 >
-                  Planned
+                  <Typography fontWeight={600}>
+                    Total Allocated
+                  </Typography>
+
+                  <Typography
+                    fontWeight={700}
+                    color="primary"
+                  >
+                    ₹ 45,000
+                  </Typography>
                 </Box>
-              </td>
-            </tr>
 
-            <tr>
-              <td style={tableCellStyle}>
-                Term 3 Fee
-              </td>
+                {/* AUTO FILL TEXT */}
 
-              <td style={tableCellStyle}>
-                04/01/2025
-              </td>
-
-              <td style={tableCellStyle}>
-                ₹ 15,000
-              </td>
-
-              <td style={tableCellStyle}>
                 <Box
                   sx={{
-                    background: "#E8F5E9",
-                    color: "#2E7D32",
-                    px: 1.5,
-                    py: 0.5,
-                    borderRadius: 1,
-                    display: "inline-block",
-                    fontSize: 13,
-                    fontWeight: 600
+                    p: 2,
+                    background: "#EDF7ED",
+                    borderTop: "1px solid #C8E6C9"
                   }}
                 >
-                  Planned
+                  <Typography
+                    fontSize={14}
+                    color="#2E7D32"
+                    fontWeight={500}
+                  >
+                    ✔ Installment totals automatically match the net payable amount.
+                  </Typography>
                 </Box>
-              </td>
-            </tr>
 
-          </tbody>
-        </table>
+              </Paper>
 
-      </Box>
+              {/* FINANCIAL SUMMARY */}
 
-      {/* TOTAL */}
+              {/* FINANCIAL SUMMARY */}
 
-      <Box
-        sx={{
-          p: 2,
-          borderTop: "1px solid #E5E7EB",
-          display: "flex",
-          justifyContent: "space-between",
-          background: "#FAFAFA"
-        }}
-      >
-        <Typography fontWeight={600}>
-          Total Allocated
-        </Typography>
+              <Paper
+                elevation={0}
+                sx={{
+                  mt: 4,
+                  p: 3,
+                  borderRadius: "14px",
+                  border: "1px solid #E5E7EB",
+                  backgroundColor: "#F9FAFB"
+                }}
+              >
+                {/* HEADER */}
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: 22,
+                    color: "#374151",
+                    mb: 2
+                  }}
+                >
+                  Financial Summary
+                </Typography>
 
-        <Typography
-          fontWeight={700}
-          color="primary"
-        >
-          ₹ 45,000
-        </Typography>
-      </Box>
+                {/* DIVIDER */}
+                <Box
+                  sx={{
+                    borderBottom: "1px solid #E5E7EB",
+                    mb: 2
+                  }}
+                />
 
-      {/* AUTO FILL TEXT */}
+                <Stack spacing={2}>
 
-      <Box
-        sx={{
-          p: 2,
-          background: "#EDF7ED",
-          borderTop: "1px solid #C8E6C9"
-        }}
-      >
-        <Typography
-          fontSize={14}
-          color="#2E7D32"
-          fontWeight={500}
-        >
-          ✔ Installment totals automatically match the net payable amount.
-        </Typography>
-      </Box>
+                  {/* Tuition */}
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      alignItems: "center",
+                      columnGap: 2
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: 16,
+                        color: "#6B7280",
+                        fontWeight: 500
+                      }}
+                    >
+                      Base Tuition Fee
+                    </Typography>
 
-    </Paper>
+                    <Typography
+                      sx={{
+                        fontSize: 16,
+                        color: "#374151",
+                        fontWeight: 600,
+                        textAlign: "right",
+                        minWidth: 120
+                      }}
+                    >
+                      ₹ 45,000.00
+                    </Typography>
+                  </Box>
 
-    {/* FINANCIAL SUMMARY */}
+                  {/* Add-ons */}
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      alignItems: "center",
+                      columnGap: 2
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: 16,
+                        color: "#6B7280",
+                        fontWeight: 500
+                      }}
+                    >
+                      Add-ons Total
+                    </Typography>
 
-  {/* FINANCIAL SUMMARY */}
+                    <Typography
+                      sx={{
+                        fontSize: 16,
+                        color: "#374151",
+                        fontWeight: 600,
+                        textAlign: "right",
+                        minWidth: 120
+                      }}
+                    >
+                      ₹ 0.00
+                    </Typography>
+                  </Box>
 
-<Paper
-  elevation={0}
-  sx={{
-    mt: 4,
-    p: 3,
-    borderRadius: "14px",
-    border: "1px solid #E5E7EB",
-    backgroundColor: "#F9FAFB"
-  }}
->
-  {/* HEADER */}
-  <Typography
-    sx={{
-      fontWeight: 700,
-      fontSize: 22,
-      color: "#374151",
-      mb: 2
-    }}
-  >
-    Financial Summary
-  </Typography>
+                  {/* Discount */}
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      alignItems: "center",
+                      columnGap: 2
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: 16,
+                        color: "#43A047",
+                        fontWeight: 500
+                      }}
+                    >
+                      Discount Applied
+                    </Typography>
 
-  {/* DIVIDER */}
-  <Box
-    sx={{
-      borderBottom: "1px solid #E5E7EB",
-      mb: 2
-    }}
-  />
+                    <Typography
+                      sx={{
+                        fontSize: 16,
+                        color: "#43A047",
+                        fontWeight: 600,
+                        textAlign: "right",
+                        minWidth: 120
+                      }}
+                    >
+                      -₹ 0.00
+                    </Typography>
+                  </Box>
 
-<Stack spacing={2}>
+                  {/* Divider */}
+                  <Box
+                    sx={{
+                      borderBottom: "1px solid #E5E7EB",
+                      my: 1
+                    }}
+                  />
 
-  {/* Tuition */}
-  <Box
-    sx={{
-      display: "grid",
-      gridTemplateColumns: "1fr auto",
-      alignItems: "center",
-      columnGap: 2
-    }}
-  >
-    <Typography
-      sx={{
-        fontSize: 16,
-        color: "#6B7280",
-        fontWeight: 500
-      }}
-    >
-      Base Tuition Fee
-    </Typography>
+                  {/* Net Payable */}
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      alignItems: "center",
+                      columnGap: 2
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: 18,
+                        fontWeight: 700,
+                        color: "#374151"
+                      }}
+                    >
+                      Net Payable
+                    </Typography>
 
-    <Typography
-      sx={{
-        fontSize: 16,
-        color: "#374151",
-        fontWeight: 600,
-        textAlign: "right",
-        minWidth: 120
-      }}
-    >
-      ₹ 45,000.00
-    </Typography>
-  </Box>
+                    <Typography
+                      sx={{
+                        fontSize: 22,
+                        fontWeight: 700,
+                        color: "#4F7DF3",
+                        textAlign: "right",
+                        minWidth: 140
+                      }}
+                    >
+                      ₹ 45,000.00
+                    </Typography>
+                  </Box>
 
-  {/* Add-ons */}
-  <Box
-    sx={{
-      display: "grid",
-      gridTemplateColumns: "1fr auto",
-      alignItems: "center",
-      columnGap: 2
-    }}
-  >
-    <Typography
-      sx={{
-        fontSize: 16,
-        color: "#6B7280",
-        fontWeight: 500
-      }}
-    >
-      Add-ons Total
-    </Typography>
-
-    <Typography
-      sx={{
-        fontSize: 16,
-        color: "#374151",
-        fontWeight: 600,
-        textAlign: "right",
-        minWidth: 120
-      }}
-    >
-      ₹ 0.00
-    </Typography>
-  </Box>
-
-  {/* Discount */}
-  <Box
-    sx={{
-      display: "grid",
-      gridTemplateColumns: "1fr auto",
-      alignItems: "center",
-      columnGap: 2
-    }}
-  >
-    <Typography
-      sx={{
-        fontSize: 16,
-        color: "#43A047",
-        fontWeight: 500
-      }}
-    >
-      Discount Applied
-    </Typography>
-
-    <Typography
-      sx={{
-        fontSize: 16,
-        color: "#43A047",
-        fontWeight: 600,
-        textAlign: "right",
-        minWidth: 120
-      }}
-    >
-      -₹ 0.00
-    </Typography>
-  </Box>
-
-  {/* Divider */}
-  <Box
-    sx={{
-      borderBottom: "1px solid #E5E7EB",
-      my: 1
-    }}
-  />
-
-  {/* Net Payable */}
-  <Box
-    sx={{
-      display: "grid",
-      gridTemplateColumns: "1fr auto",
-      alignItems: "center",
-      columnGap: 2
-    }}
-  >
-    <Typography
-      sx={{
-        fontSize: 18,
-        fontWeight: 700,
-        color: "#374151"
-      }}
-    >
-      Net Payable
-    </Typography>
-
-    <Typography
-      sx={{
-        fontSize: 22,
-        fontWeight: 700,
-        color: "#4F7DF3",
-        textAlign: "right",
-        minWidth: 140
-      }}
-    >
-      ₹ 45,000.00
-    </Typography>
-  </Box>
-
-</Stack>
-</Paper>
-  </>
-)}
+                </Stack>
+              </Paper>
+            </>
+          )}
           <br></br>
 
           {/* ================= BUTTONS ================= */}
@@ -1737,7 +2823,7 @@ const tableCellStyle = {
                       steps.length - 1
                       ? () =>
                         navigate(
-                          "/students"
+                          "/s-admin/students"
                         )
                       : handleNext
                     : activeStep ===
