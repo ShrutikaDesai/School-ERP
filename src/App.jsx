@@ -20,6 +20,7 @@ import Exams from "./components/admin/exams/Exams.jsx";
 import Transport from "./components/admin/transport/Transport.jsx";
 import Communication from "./components/admin/communication/Communication.jsx";
 import Settings from "./components/admin/settings/Settings.jsx";
+import ViewStudentDetails from "./components/admin/students/ViewStudentDetails.jsx";
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
           <Route path="teachers" element={<TeachersList />} />
           <Route path="add-student" element={<AddStudent />} />
           <Route path="students/:id/edit" element={<AddStudent mode="edit" />}/>
-          <Route path="students/:id/view" element={<AddStudent mode="view" />} />
+          {/* <Route path="students/:id/view" element={<AddStudent mode="view" />} /> */}
           <Route path="classes" element={<Classes />} />
           <Route path="sections" element={<Sections />} />
           <Route path="mark-attendance" element={<MarkAttendance />} />
@@ -48,7 +49,9 @@ function App() {
           <Route path="exams" element={<Exams />} />
           <Route path="transport" element={<Transport />} />
           <Route path="communication" element={<Communication />} />
-          <Route path="settings" element={<Settings />} />  
+          <Route path="settings" element={<Settings />} /> 
+
+          <Route path="students/:id/view" element={<ViewStudentDetails />} />
 
         </Route>
 

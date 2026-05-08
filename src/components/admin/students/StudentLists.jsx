@@ -10,7 +10,8 @@ import {
   IconButton,
   Stack,
   Paper,
-    LinearProgress,
+  LinearProgress,
+  Divider
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 
@@ -33,6 +34,8 @@ import { Download } from "@mui/icons-material";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useGridApiRef } from "@mui/x-data-grid";
+import { Drawer } from "@mui/material";
+import muiTheme from "../../../theme/muiTheme";
 
 const { useBreakpoint } = AntGrid;
 
@@ -124,6 +127,8 @@ const StudentLists = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [genderFilter, setGenderFilter] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState(null);
+const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     setRows(getStoredStudents());
@@ -136,9 +141,25 @@ const StudentLists = () => {
     setDeleteModalOpen(true);
   };
 
-  const handleViewClick = (row) => {
-    navigate(`/s-admin/students/${row.id}/view`);
-  };
+  // 2. Auto-select first student on load
+useEffect(() => {
+  const stored = getStoredStudents();
+  setRows(stored);
+  if (stored.length > 0) {
+    setSelectedStudent(stored[0]);
+    setDrawerOpen(true);
+  }
+}, []);
+
+// 3. Update handleViewClick
+const handleViewClick = (row) => {
+  setSelectedStudent(row);
+  setDrawerOpen(true);
+};
+
+  // const handleViewClick = (row) => {
+  //   navigate(`/s-admin/students/${row.id}/view`);
+  // };
 
   const handleEditClick = (row) => {
     navigate(`/s-admin/students/${row.id}/edit`);
@@ -173,7 +194,7 @@ const StudentLists = () => {
       "Student Name": row.name,
       "Class": row.class,
       "Section": row.section,
-        "Attendance": row.attendance ? `${row.attendance}%` : "0%",
+      "Attendance": row.attendance ? `${row.attendance}%` : "0%",
       "Gender": row.gender,
       "Phone": row.phone,
       "Status": row.status
@@ -259,68 +280,68 @@ const StudentLists = () => {
 
     { field: "name", headerName: "Student Name", flex: 1.5 },
 
- {
-  field: "classSection",
-  headerName: "Class / Section",
-  width: 120,
-  renderCell: (params) => (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        height: "100%",
-        fontSize: "0.875rem",
-        fontWeight: 400,
-      }}
-    >
-      {params.row.class} - {params.row.section}
-    </Box>
-  ),
-},
-
-     {
-    field: "attendance",
-    headerName: "Attendance",
-    flex: 1.5,
-    renderCell: (params) => {
-      const value = params.value || 0;
-
-      return (
-        <Box sx={{ width: "100%", px: 1 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              mb: 0.5,
-            }}
-          >
-            <Typography variant="caption" fontWeight={600}>
-              {value}%
-            </Typography>
-          </Box>
-
-          <LinearProgress
-            variant="determinate"
-            value={value}
-            sx={{
-              height: 8,
-              borderRadius: 5,
-              backgroundColor: "#E0E0E0",
-              "& .MuiLinearProgress-bar": {
-                borderRadius: 5,
-                background:
-                  value >= 75
-                    ? "linear-gradient(90deg,#4CAF50,#81C784)"
-                    : value >= 40
-                    ? "linear-gradient(90deg,#FF9800,#FFB74D)"
-                    : "linear-gradient(90deg,#F44336,#EF5350)",
-              },
-            }}
-          />
+    {
+      field: "classSection",
+      headerName: "Class / Section",
+      width: 120,
+      renderCell: (params) => (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            height: "100%",
+            fontSize: "0.875rem",
+            fontWeight: 400,
+          }}
+        >
+          {params.row.class} - {params.row.section}
         </Box>
-      );
+      ),
     },
-  },
+
+    {
+      field: "attendance",
+      headerName: "Attendance",
+      flex: 1.5,
+      renderCell: (params) => {
+        const value = params.value || 0;
+
+        return (
+          <Box sx={{ width: "100%", px: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mb: 0.5,
+              }}
+            >
+              <Typography variant="caption" fontWeight={600}>
+                {value}%
+              </Typography>
+            </Box>
+
+            <LinearProgress
+              variant="determinate"
+              value={value}
+              sx={{
+                height: 8,
+                borderRadius: 5,
+                backgroundColor: "#E0E0E0",
+                "& .MuiLinearProgress-bar": {
+                  borderRadius: 5,
+                  background:
+                    value >= 75
+                      ? "linear-gradient(90deg,#4CAF50,#81C784)"
+                      : value >= 40
+                        ? "linear-gradient(90deg,#FF9800,#FFB74D)"
+                        : "linear-gradient(90deg,#F44336,#EF5350)",
+                },
+              }}
+            />
+          </Box>
+        );
+      },
+    },
 
 
     {
@@ -667,6 +688,259 @@ const StudentLists = () => {
           </Typography>
         </Box>
       </Modal>
+
+
+
+
+      {/* STUDENT DETAILS DRAWER */}
+<Drawer
+  anchor="right"
+  open={drawerOpen}
+  onClose={() => setDrawerOpen(false)}
+  variant="persistent"
+  sx={{
+    "& .MuiDrawer-paper": {
+      width: 340,
+      p: 3,
+      boxSizing: "border-box",
+      boxShadow: "-4px 0 20px rgba(21,101,192,0.08)",
+      border: "none",
+      backgroundColor: "background.paper",
+    },
+  }}
+>
+  {selectedStudent && (
+    <Box>
+
+      {/* Header */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Typography variant="h6" color="text.primary">
+          Student Details
+        </Typography>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <IconButton size="small" color="primary"
+            onClick={() => navigate(`/s-admin/students/${selectedStudent.id}/edit`)}
+          >
+            <Edit fontSize="small" />
+          </IconButton>
+          <IconButton size="small" onClick={() => setDrawerOpen(false)}>
+            <Close fontSize="small" />
+          </IconButton>
+        </Box>
+      </Box>
+
+      <Divider sx={{ mb: 3 }} />
+
+      {/* Avatar + Name */}
+      <Box sx={{ textAlign: "center", mb: 3 }}>
+        <Box
+          sx={{
+            width: 72, height: 72,
+            borderRadius: "50%",
+            bgcolor: "primary.main",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            mx: "auto", mb: 1.5,
+            fontSize: 28, color: "#fff", fontWeight: 700,
+          }}
+        >
+          {selectedStudent.name?.charAt(0)}
+        </Box>
+
+        <Typography variant="h6" color="text.primary">
+          {selectedStudent.name}
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          {selectedStudent.class} - {selectedStudent.section}&nbsp;|&nbsp;#{selectedStudent.rollNo}
+        </Typography>
+
+        <Chip
+          label={selectedStudent.status}
+          size="small"
+          color={selectedStudent.status === "Active" ? "success" : "default"}
+          sx={{ mt: 1, color: selectedStudent.status === "Active" ? "#fff" : "text.secondary" }}
+        />
+      </Box>
+
+      {/* Attendance + Gender cards */}
+      <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+        <Paper
+          variant="outlined"
+          sx={{ flex: 1, p: 1.5, borderRadius: `${muiTheme.shape.borderRadius}px`, textAlign: "center" }}
+        >
+          <Typography variant="caption" color="text.secondary" fontWeight={600}>
+            ATTENDANCE
+          </Typography>
+          <Typography
+            fontWeight={700}
+            fontSize={20}
+            color={
+              selectedStudent.attendance >= 75 ? "success.main"
+              : selectedStudent.attendance >= 40 ? "warning.main"
+              : "error.main"
+            }
+          >
+            {selectedStudent.attendance}%
+          </Typography>
+        </Paper>
+
+        <Paper
+          variant="outlined"
+          sx={{ flex: 1, p: 1.5, borderRadius: `${muiTheme.shape.borderRadius}px`, textAlign: "center" }}
+        >
+          <Typography variant="caption" color="text.secondary" fontWeight={600}>
+            GENDER
+          </Typography>
+          <Typography fontWeight={700} fontSize={15} color="text.primary" sx={{ mt: 0.5 }}>
+            {selectedStudent.gender}
+          </Typography>
+        </Paper>
+      </Box>
+
+      {/* Guardian Information */}
+      <Typography
+        variant="caption"
+        fontWeight={700}
+        color="text.secondary"
+        sx={{ letterSpacing: 0.8, mb: 1.5, display: "block" }}
+      >
+        GUARDIAN INFORMATION
+      </Typography>
+
+      <Paper
+        variant="outlined"
+        sx={{
+          borderRadius: `${muiTheme.shape.borderRadius}px`,
+          p: 2, mb: 2,
+          display: "flex", alignItems: "center", gap: 2,
+        }}
+      >
+        <Box
+          sx={{
+            width: 40, height: 40, minWidth: 40,
+            borderRadius: "50%",
+            bgcolor: "primary.main",
+            opacity: 0.12,                         // light tint from primary
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        />
+        {/* icon overlaid separately so opacity doesn't affect it */}
+        <Box sx={{ position: "relative", ml: "-48px", mr: "8px" }}>
+          <Box
+            sx={{
+              width: 40, height: 40, minWidth: 40,
+              borderRadius: "50%",
+              backgroundColor: "rgba(21,101,192,0.10)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "primary.main",
+            }}
+          >
+            <Groups fontSize="small" />
+          </Box>
+        </Box>
+
+        <Box>
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            Kiran Kumar
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.3, display: "block" }}>
+            📞 9456776654
+          </Typography>
+        </Box>
+      </Paper>
+
+      {/* Primary Email */}
+      <Paper
+        variant="outlined"
+        sx={{
+          borderRadius: `${muiTheme.shape.borderRadius}px`,
+          p: 2, mb: 3,
+          display: "flex", alignItems: "center", gap: 2,
+        }}
+      >
+        <Box
+          sx={{
+            width: 40, height: 40, minWidth: 40,
+            borderRadius: "50%",
+            backgroundColor: "rgba(249,168,37,0.12)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "warning.main",
+          }}
+        >
+          <Typography fontSize={18}>✉️</Typography>
+        </Box>
+        <Box>
+          <Typography variant="body2" fontWeight={600} color="text.primary">
+            Primary Email
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.3, display: "block" }}>
+            {selectedStudent.email || "N/A"}
+          </Typography>
+        </Box>
+      </Paper>
+
+      {/* Attendance Progress */}
+      <Box sx={{ mb: 1 }}>
+        <Typography variant="caption" color="text.secondary" fontWeight={600}>
+          ATTENDANCE PROGRESS
+        </Typography>
+        <LinearProgress
+          variant="determinate"
+          value={selectedStudent.attendance || 0}
+          color={
+            selectedStudent.attendance >= 75 ? "success"
+            : selectedStudent.attendance >= 40 ? "warning"
+            : "error"
+          }
+          sx={{ mt: 1 }}  // height + borderRadius come from theme MuiLinearProgress overrides
+        />
+      </Box>
+
+    {/* Action Buttons */}
+<Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+
+    {/* View Profile Button */}
+  <Button
+    fullWidth
+    variant="contained"
+    color="default"
+    sx={{
+      py: 1.2,
+        fontWeight: 600,
+      textTransform: "none",
+      border: `1px solid ${muiTheme.palette.divider}`,
+    }}
+    onClick={() =>
+      navigate(`/s-admin/students/${selectedStudent.id}/view`)
+    }
+  >
+    View Profile
+  </Button>
+
+  {/* Collect Fee Button */}
+  <Button
+    fullWidth
+    variant="contained"
+    color="primary"
+    sx={{
+      py: 1.2,
+      fontWeight: 600,
+      boxShadow: "none",
+      textTransform: "none",
+    }}
+    onClick={() =>
+      navigate(`/s-admin/collect-fee/${selectedStudent.id}`)
+    }
+  >
+    Collect Fee
+  </Button>
+
+
+</Box>
+
+    </Box>
+  )}
+</Drawer>
     </Box>
   );
 };
