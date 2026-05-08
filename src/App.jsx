@@ -11,6 +11,7 @@ import AddStudent from "./components/admin/students/AddStudent.jsx";
 import StudentLists from "./components/admin/students/StudentLists.jsx";
 import AdminSignUp from "./components/admin/AdminSignUp.jsx";
 import AdminLogin from "./components/admin/AdminLogin.jsx";
+import Profile from "./components/admin/Profile.jsx";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/attendance-report" element={<AttendanceReport />} />
           <Route path="/reports" element={<Reports />} />
           {/* <Route path="/settings" element={<Settings />} /> */}
+          <Route path="/profile" element={<Profile />} />
 
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin-signup" element={<AdminSignUp />} />

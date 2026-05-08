@@ -131,7 +131,7 @@ const AdminLayout = () => {
 
   const profileMenu = {
     items: [
-      { key: "1", icon: <UserOutlined />, label: "Profile" },
+      { key: "1", icon: <UserOutlined />, label: "Profile", onClick: () => navigate("/profile") },
       { key: "2", icon: <LogoutOutlined />, label: "Logout" }
     ]
   };
