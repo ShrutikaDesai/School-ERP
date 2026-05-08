@@ -24,7 +24,13 @@ import {
   UserOutlined,
   LogoutOutlined,
   FileTextOutlined,
-  BankOutlined
+  BankOutlined,
+   MessageOutlined,
+  ReadOutlined,
+  DollarOutlined,
+  CarOutlined,
+  ThunderboltOutlined,
+  SolutionOutlined,
 } from "@ant-design/icons";
 
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
@@ -35,7 +41,17 @@ const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
-const rootSubmenuKeys = ["students", "academics", "attendance", "others"];
+const rootSubmenuKeys = [
+  "students",
+  "academics",
+  "attendance",
+  "teachers",
+  "fees",
+  "exams",
+  "communication",
+  "transport",
+  "settings"
+];
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -52,6 +68,11 @@ const AdminLayout = () => {
   const isAuthPage = authPages.includes(location.pathname);
 
   const menuItems = [
+      {
+      key: "/s-admin/quick-access",
+      icon: <ThunderboltOutlined />,
+      label: "QUICK ACCESS",
+    },
     {
       key: "/s-admin/dashboard",
       icon: <DashboardOutlined />,
@@ -60,11 +81,16 @@ const AdminLayout = () => {
     {
       key: "students",
       icon: <TeamOutlined />,
-      label: "STUDENT MANAGEMENT",
+      label: "STUDENT",
       children: [
         { key: "/s-admin/students", label: "Students" },
         { key: "/s-admin/add-student", label: "Add Student" }
       ],
+    },
+     {
+      key: "/s-admin/teachers",
+      icon: <SolutionOutlined />,
+      label: "TEACHERS",
     },
     {
       key: "academics",
@@ -87,8 +113,35 @@ const AdminLayout = () => {
     {
       key: "/s-admin/reports",
       icon: <FileTextOutlined />,
-      label: "REPORTS",
+      label: "ACADEMIC REPORTS",
     },
+
+      {
+      key: "/s-admin/academic-fees",
+      icon: <DollarOutlined />,
+      label: "ACADEMIC FEES",
+    },
+   {
+      key: "/s-admin/exams",
+      icon: <ReadOutlined />,
+      label: "EXAMS",
+    },
+ {
+      key: "/s-admin/communication",
+      icon: <MessageOutlined />,
+      label: "COMMUNICATION",
+    },
+     {
+      key: "/s-admin/transport",
+      icon: <CarOutlined />,
+      label: "TRANSPORT",
+    },
+         {
+      key: "/s-admin/settings",
+      icon: <SettingOutlined />,
+      label: "SETTINGS",
+    },
+
 
     // {
     //   key: "others",
@@ -104,7 +157,12 @@ const AdminLayout = () => {
     if (location.pathname.startsWith("/s-admin/students")) return "students";
     if (location.pathname.startsWith("/s-admin/classes") || location.pathname.startsWith("/s-admin/sections")) return "academics";
     if (location.pathname.startsWith("/s-admin/mark-attendance") || location.pathname.startsWith("/s-admin/attendance-report")) return "attendance";
-    if (location.pathname.startsWith("/s-admin/reports") || location.pathname.startsWith("/s-admin/settings")) return "others";
+    if (location.pathname.startsWith("/s-admin/teachers")) return "teachers";
+    if (location.pathname.startsWith("/s-admin/academic-fees")) return "fees";
+    if (location.pathname.startsWith("/s-admin/exams")) return "exams";
+    if (location.pathname.startsWith("/s-admin/communication")) return "communication";
+    if (location.pathname.startsWith("/s-admin/transport")) return "transport";
+    if (location.pathname.startsWith("/s-admin/settings")) return "settings";
     return "";
   };
 
