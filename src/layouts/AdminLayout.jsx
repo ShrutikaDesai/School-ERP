@@ -131,7 +131,7 @@ const AdminLayout = () => {
 
   const profileMenu = {
     items: [
-      { key: "1", icon: <UserOutlined />, label: "Profile", onClick: () => navigate("/profile") },
+      { key: "1", icon: <UserOutlined />, label: "Profile", onClick: () => navigate("/s-admin/profile") },
       { key: "2", icon: <LogoutOutlined />, label: "Logout" }
     ]
   };
@@ -250,32 +250,72 @@ const AdminLayout = () => {
         </Sider>
       )}
 
-      {/* MOBILE DRAWER */}
-      {!isAuthPage && (
-        <Drawer
-          title="School ERP"
-          placement="left"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          width={260}
-          bodyStyle={{ padding: 0 }}
-        >
-          <Menu
-            theme="dark"
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            openKeys={openKeys}
-            items={menuItems}
-            onClick={handleMenuClick}
-            onOpenChange={handleOpenChange}
-            style={{
-              background: "transparent",
-              borderRight: "none",
-              color: "#353333"
-            }}
-          />
-        </Drawer>
-      )}
+      {/* ================= MOBILE DRAWER ONLY ================= */}
+{!isAuthPage && isMobile && (
+  <Drawer
+    placement="left"
+    open={drawerOpen}
+    onClose={() => setDrawerOpen(false)}
+    width={280}
+    closable={false}
+    bodyStyle={{
+      padding: 0,
+      background: "#ffffff",
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+    }}
+  >
+    {/* MOBILE LOGO */}
+    <div className="erp-logo">
+      <div className="erp-logo-icon">
+        <BankOutlined />
+      </div>
+
+      <div className="erp-logo-text">
+        School ERP
+      </div>
+    </div>
+
+    {/* MOBILE MENU */}
+    <Menu
+      mode="inline"
+      className="erp-sidebar-menu"
+      selectedKeys={[location.pathname]}
+      openKeys={openKeys}
+      items={menuItems}
+      onClick={handleMenuClick}
+      onOpenChange={handleOpenChange}
+      style={{
+        flex: 1,
+        borderRight: "none",
+        background: "#ffffff",
+      }}
+    />
+
+    {/* MOBILE FOOTER */}
+    <div className="erp-sidebar-footer">
+      <div className="erp-footer-user">
+        <Avatar
+          size={40}
+          src="https://i.pravatar.cc/150?img=12"
+        />
+
+        <div className="erp-footer-user-info">
+          <div className="erp-footer-name">
+            Admin User
+          </div>
+
+          <div className="erp-footer-email">
+            admin@school.com
+          </div>
+        </div>
+      </div>
+
+      <SettingOutlined className="erp-footer-setting" />
+    </div>
+  </Drawer>
+)}
 
       {/* MAIN LAYOUT */}
       <Layout

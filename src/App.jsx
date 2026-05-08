@@ -13,7 +13,7 @@ import AddStudent from "./components/admin/students/AddStudent.jsx";
 import StudentLists from "./components/admin/students/StudentLists.jsx";
 import AdminSignUp from "./components/admin/AdminSignUp.jsx";
 import AdminLogin from "./components/admin/AdminLogin.jsx";
-import Profile from "./components/admin/Profile.jsx";
+import Profile from "./components/admin/profile/Profile.jsx";
 
 function App() {
   return (
@@ -36,6 +36,7 @@ function App() {
           <Route path="mark-attendance" element={<MarkAttendance />} />
           <Route path="attendance-report" element={<AttendanceReport />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="profile" element={<Profile />} />
 
         </Route>
 
