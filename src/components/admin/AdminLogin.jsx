@@ -111,7 +111,7 @@ const AdminLogin = () => {
               mb: 0.5,
             }}
           >
-            Welcome Back
+            Welcome
           </Typography>
 
           <Typography
