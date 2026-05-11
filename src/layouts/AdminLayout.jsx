@@ -187,10 +187,18 @@ const AdminLayout = () => {
     if (isMobile) setDrawerOpen(false);
   };
 
+  
+  const handleLogout = () => {
+  localStorage.clear();
+
+  navigate("/");
+};
+
+
   const profileMenu = {
     items: [
       { key: "1", icon: <UserOutlined />, label: "Profile", onClick: () => navigate("/s-admin/profile") },
-      { key: "2", icon: <LogoutOutlined />, label: "Logout" }
+      { key: "2", icon: <LogoutOutlined />, label: "Logout" , onClick: handleLogout,}
     ]
   };
 
