@@ -20,6 +20,7 @@
     "@mui/x-date-pickers": "^9.0.4",
     "@mui/x-date-pickers-pro": "^9.0.4",
     "@reduxjs/toolkit": "^2.11.2",
+    "@tanstack/react-table": "^8.21.3",
     "antd": "^6.3.6",
     "dayjs": "^1.11.20",
     "file-saver": "^2.0.5",

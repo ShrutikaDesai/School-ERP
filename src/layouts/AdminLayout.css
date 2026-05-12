@@ -91,8 +91,11 @@ body,
   z-index: 1000;
 }
 
-.erp-sidebar .ant-menu-root {
+.erp-sidebar .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
 /* =========================================
@@ -128,16 +131,39 @@ body,
 }
 
 /* =========================================
-   MENU
+   MENU SCROLLABLE
 ========================================= */
 .erp-sidebar-menu {
   flex: 1;
   background: transparent !important;
   border-right: none !important;
-  display: flex;
-  flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-bottom: 12px;
+}
+
+/* CUSTOM SCROLLBAR */
+.erp-sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.erp-sidebar-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.erp-sidebar-menu::-webkit-scrollbar-thumb {
+  background: rgba(21, 101, 192, 0.25);
+  border-radius: 20px;
+}
+
+.erp-sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(21, 101, 192, 0.45);
+}
+
+/* Firefox */
+.erp-sidebar-menu {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(21, 101, 192, 0.25) transparent;
 }
 
 /* MENU ITEM */
@@ -203,12 +229,6 @@ body,
 /* =========================================
    FOOTER
 ========================================= */
-.ant-layout-sider-children {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
 .erp-sidebar-footer {
   height: 76px;
   border-top: 1px solid #f1f5f9;
@@ -252,10 +272,17 @@ body,
 }
 
 /* =========================================
+   MOBILE DRAWER SCROLL
+========================================= */
+.ant-drawer-body .erp-sidebar-menu {
+  height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+/* =========================================
    TABLET RESPONSIVE
 ========================================= */
 @media (max-width: 768px) {
-  
   .erp-logo {
     height: 64px;
     padding: 0 16px;
@@ -297,7 +324,6 @@ body,
    MOBILE RESPONSIVE
 ========================================= */
 @media (max-width: 480px) {
-  
   .erp-logo {
     height: 60px;
     padding: 0 14px;
@@ -347,7 +373,3 @@ body,
     font-size: 12px;
   }
 }
-
-
-
-

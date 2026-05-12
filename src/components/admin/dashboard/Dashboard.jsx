@@ -1,49 +1,66 @@
+// Dashboard.jsx
+
 import React, { useState } from "react";
 import {
-  Row,
-  Col,
-  Card,
   Table,
-  Typography,
   Button,
   Space,
   Select,
   theme,
-  Grid
 } from "antd";
+
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
+
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  LinearProgress,
+} from "@mui/material";
 
 import {
   BookOutlined,
   TeamOutlined,
   CalendarOutlined,
-  BarChartOutlined
+  BarChartOutlined,
 } from "@ant-design/icons";
 
-
-import { Line, Column } from "@ant-design/plots";
 import { useNavigate } from "react-router-dom";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
-const { Title, Text } = Typography;
+import "./Dashboard.css";
+
 const { Option } = Select;
-const { useBreakpoint } = Grid;
 
 const Dashboard = () => {
-
+  const muiTheme = useTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
   const { token } = theme.useToken();
-  const screens = useBreakpoint();
-  const isMobile = !screens.md;
   const navigate = useNavigate();
 
   const [selectedClass, setSelectedClass] = useState("all");
 
-
+  /* =========================
+     ATTENDANCE DATA
+  ========================= */
   const attendanceMap = {
     all: [
-      { month: "Jan", attendance: 80, type: "Attendance"},
-      { month: "Feb", attendance: 85, type: "Attendance"},
-      { month: "Mar", attendance: 79, type: "Attendance"},
-      { month: "Apr", attendance: 82, type: "Attendance"},
-      { month: "May", attendance: 90, type: "Attendance"},
+      { month: "Jan", attendance: 80 },
+      { month: "Feb", attendance: 85 },
+      { month: "Mar", attendance: 79 },
+      { month: "Apr", attendance: 82 },
+      { month: "May", attendance: 90 },
     ],
     fybca: [
       { month: "Jan", attendance: 88 },
@@ -65,80 +82,63 @@ const Dashboard = () => {
       { month: "Mar", attendance: 81 },
       { month: "Apr", attendance: 84 },
       { month: "May", attendance: 86 },
-    ]
+    ],
   };
-  
 
-  const attendanceConfig = {
-  data: attendanceMap[selectedClass] || attendanceMap.all,
-
-  xField: "month",
-  yField: "attendance",
-
-  smooth: true,
-
-  height: 320,
-
-  padding: [20, 20, 40, 10],
-
-  lineStyle: {
-    stroke: "#ff6b6b",
-    lineWidth: 4
-  },
-
-  point: {
-    size: 4,
-    shape: "circle",
-    style: {
-      fill: "#fff",
-      stroke: "#ff6b6b",
-      lineWidth: 2
+  /* =========================
+     CUSTOM TOOLTIP
+  ========================= */
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload?.length) {
+      return (
+        <div
+          style={{
+            background: "#fff",
+            padding: "8px 12px",
+            border: "1px solid #E5E7EB",
+            borderRadius: 8,
+            boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontSize: 12,
+              color: "#6B7280",
+            }}
+          >
+            {label}
+          </p>
+          <p
+            style={{
+              margin: 0,
+              fontWeight: 600,
+              color: "#1565C0",
+            }}
+          >
+            {payload[0].value}%
+          </p>
+        </div>
+      );
     }
-  },
+    return null;
+  };
 
-  seriesField: "type",
-
-legend: false,
-
-tooltip: {
-  items: ["attendance"]
-},
-
-  xAxis: {
-    line: null,
-    tickLine: null
-  },
-
-  yAxis: {
-    grid: {
-      line: {
-        style: {
-          stroke: "#f0f0f0",
-          lineDash: [4, 4]
-        }
-      }
-    }
-  },
-
-  interactions: [
-    {
-      type: "marker-active"
-    }
-  ]
-};
-
+  /* =========================
+     TABLE COLUMNS
+  ========================= */
   const columns = [
     {
       title: "Student Name",
-      dataIndex: "name"
+      dataIndex: "name",
     },
     {
       title: "Course",
-      dataIndex: "course"
+      dataIndex: "course",
     },
     {
       title: "Attendance",
-      dataIndex: "attendance"
+      dataIndex: "attendance",
     },
     {
       title: "Status",
@@ -146,364 +146,343 @@ tooltip: {
       render: (status) => (
         <span
           style={{
-            color: status === "Good"
-              ? token.colorSuccess
-              : token.colorWarning,
-            fontWeight: 600
+            color:
+              status === "Good"
+                ? token.colorSuccess
+                : token.colorWarning,
+            fontWeight: 600,
           }}
         >
           {status}
         </span>
-      )
-    }
+      ),
+    },
   ];
 
+  /* =========================
+     TABLE DATA
+  ========================= */
   const data = [
     {
       key: 1,
       name: "Amit Patil",
       course: "Computer Science",
       attendance: "92%",
-      status: "Good"
+      status: "Good",
     },
     {
       key: 2,
       name: "Priya Sharma",
       course: "Electronics",
       attendance: "74%",
-      status: "Average"
+      status: "Average",
     },
     {
       key: 3,
       name: "Rahul Desai",
       course: "Mechanical",
       attendance: "89%",
-      status: "Good"
-    }
+      status: "Good",
+    },
+  ];
+
+  /* =========================
+     KPI CARDS
+  ========================= */
+  const kpiCards = [
+    {
+      title: "Academic Courses",
+      value: "24",
+      icon: <BookOutlined />,
+      bg: "linear-gradient(135deg,#1565C0,#42A5F5)",
+      growth: "+12%",
+      progress: 75,
+    },
+    {
+      title: "Students",
+      value: "1450",
+      icon: <TeamOutlined />,
+      bg: "linear-gradient(135deg,#2E7D32,#66BB6A)",
+      growth: "+18%",
+      progress: 88,
+    },
+    {
+      title: "Attendance",
+      value: "88%",
+      icon: <CalendarOutlined />,
+      bg: "linear-gradient(135deg,#EF6C00,#FFB74D)",
+      growth: "+4%",
+      progress: 88,
+    },
+    {
+      title: "Reports",
+      value: "156",
+      icon: <BarChartOutlined />,
+      bg: "linear-gradient(135deg,#6A1B9A,#BA68C8)",
+      growth: "+22%",
+      progress: 68,
+    },
   ];
 
   return (
-    <div
-      style={{
-        padding: isMobile ? 12 : 24
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          alignItems: isMobile ? "stretch" : "center",
-          justifyContent: "space-between",
-          gap: 12,
-          marginBottom: 24
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <Title
-            level={isMobile ? 4 : 3}
-            style={{ margin: 0 }}
-          >
-            Dashboard
-          </Title>
-
-          <Text type="secondary">
-            Monitor academic performance, attendance, and student activity
-          </Text>
-        </div>
+    <div className="dashboard-container">
+      {/* =========================
+          HEADER
+      ========================= */}
+      <div className="dashboard-header">
+        <h1>Dashboard</h1>
+        <p>
+          Monitor academic performance, attendance, and student activity
+        </p>
       </div>
 
+      {/* =========================
+          KPI GRID
+      ========================= */}
+      <div className="kpi-grid">
+        {kpiCards.map((item, index) => (
+          <div className="kpi-card" key={index}>
+            <div className="kpi-top">
+              <div>
+                <div className="kpi-title">{item.title}</div>
 
+                <div className="kpi-value">{item.value}</div>
 
-      {/* KPI Cards */}
+                <div className="kpi-growth">
+                  ↑ {item.growth} this month
+                </div>
+              </div>
 
-      <Row gutter={[16, 16]}>
+              <div
+                className="kpi-icon"
+                style={{
+                  background: item.bg,
+                }}
+              >
+                {item.icon}
+              </div>
+            </div>
 
-        {[
-          {
-            title: "Academic Courses",
-            value: "24",
-            icon: <BookOutlined />,
-            bg: "linear-gradient(135deg,#1565C0,#42A5F5)",
-            growth: "+12%",
-            progress: 75
-          },
-          {
-            title: "Students",
-            value: "1450",
-            icon: <TeamOutlined />,
-            bg: "linear-gradient(135deg,#2E7D32,#66BB6A)",
-            growth: "+18%",
-            progress: 88
-          },
-          {
-            title: "Attendance",
-            value: "88%",
-            icon: <CalendarOutlined />,
-            bg: "linear-gradient(135deg,#EF6C00,#FFB74D)",
-            growth: "+4%",
-            progress: 88
-          },
-          {
-            title: "Reports",
-            value: "156",
-            icon: <BarChartOutlined />,
-            bg: "linear-gradient(135deg,#6A1B9A,#BA68C8)",
-            growth: "+22%",
-            progress: 68
-          }
+            <LinearProgress
+              variant="determinate"
+              value={item.progress}
+              className="kpi-progress"
+              sx={{
+                height: 8,
+                borderRadius: 5,
+                backgroundColor: "#EDF2F7",
+                "& .MuiLinearProgress-bar": {
+                  borderRadius: 5,
+                  background: item.bg,
+                },
+              }}
+            />
+          </div>
+        ))}
+      </div>
 
-        ].map((item, index) => (
-
-          <Col
-            xs={24}
-            sm={12}
-            lg={6}
-            key={index}
+      {/* =========================
+          CHART + OVERVIEW
+      ========================= */}
+      <div className="dashboard-middle">
+        {/* Attendance Card */}
+        <div className="dashboard-card">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "12px",
+              marginBottom: "20px",
+            }}
           >
+            <h2 style={{ margin: 0 }}>
+              Class-wise Attendance
+            </h2>
 
-            <Card
-              hoverable
-              bodyStyle={{ padding: 20 }}
+            <Select
+              value={selectedClass}
+              onChange={setSelectedClass}
               style={{
-                borderRadius: 18,
-                boxShadow: token.boxShadow,
-                transition: "0.3s"
+                width: isMobile ? 130 : 170,
               }}
             >
+              <Option value="all">All</Option>
+              <Option value="fybca">FY BCA</Option>
+              <Option value="sybca">SY BCA</Option>
+              <Option value="tybca">TY BCA</Option>
+            </Select>
+          </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 20
-                }}
-              >
-
-                <div>
-
-                  <Text type="secondary">
-                    {item.title}
-                  </Text>
-
-                  <h2
-                    style={{
-                      margin: "8px 0 6px",
-                      fontSize: 30,
-                      fontWeight: 700
-                    }}
-                  >
-                    {item.value}
-                  </h2>
-
-                  <Text
-                    style={{
-                      color: "#2E7D32",
-                      fontWeight: 600
-                    }}
-                  >
-                    ↑ {item.growth} this month
-                  </Text>
-
-                </div>
-
-
-                <div
-                  style={{
-                    height: 56,
-                    width: 56,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24,
-                    color: "#fff",
-                    background: item.bg
-                  }}
+          <ResponsiveContainer width="100%" height={350}>
+            <AreaChart
+              data={attendanceMap[selectedClass]}
+            >
+              <defs>
+                <linearGradient
+                  id="attendanceGradient"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
                 >
-                  {item.icon}
-                </div>
+                  <stop
+                    offset="5%"
+                    stopColor="#1565C0"
+                    stopOpacity={0.2}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="#1565C0"
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              </defs>
 
-              </div>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#E2E8F0"
+              />
 
+              <XAxis
+                dataKey="month"
+                tick={{ fill: "#64748B" }}
+              />
 
-              <div
-                style={{
-                  height: 8,
-                  background: "#EDF2F7",
-                  borderRadius: 20,
-                  overflow: "hidden"
+              <YAxis
+                domain={[0, 100]}
+                tick={{ fill: "#64748B" }}
+              />
+
+              <Tooltip content={<CustomTooltip />} />
+
+              <Area
+                type="monotone"
+                dataKey="attendance"
+                stroke="#1565C0"
+                strokeWidth={3}
+                fill="url(#attendanceGradient)"
+                dot={{
+                  r: 4,
+                  fill: "#1565C0",
                 }}
-              >
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
 
-                <div
-                  style={{
-                    height: "100%",
-                    width: `${item.progress}%`,
-                    background: item.bg,
-                    borderRadius: 20
-                  }}
-                />
+        {/* Academic Overview */}
+<div className="dashboard-card">
+  <h2>Academic Overview</h2>
 
-              </div>
-
-            </Card>
-
-          </Col>
-
-        ))}
-
-      </Row>
-
-
-
-      {/* Charts */}
-
-      <Row
-        gutter={[16, 16]}
-        style={{ marginTop: 24 }}
-      >
-
-        <Col xs={24} lg={14}>
-          <Card
-            title="Class-wise Attendance"
-            extra={
-              <Select
-                value={selectedClass}
-                onChange={setSelectedClass}
-                style={{
-                  width: isMobile ? 130 : 170
-                }}
-              >
-                <Option value="all">All</Option>
-                <Option value="7th Standard">7th Standard</Option>
-                <Option value="8th Standard">8th Standard</Option>
-                <Option value="9th Standard">9th Standard</Option>
-                <Option value="10th Standard">10th Standard</Option>
-              </Select>
-            }
-            style={{
-              boxShadow: token.boxShadow
-            }}
-          >
-            <Line {...attendanceConfig} />
-          </Card>
-        </Col>
-
-
-
-        <Col xs={24} lg={10}>
-          <Card
-            title="Academic Overview"
-            style={{
-              boxShadow: token.boxShadow
-            }}
-          >
-
-            <div style={{ marginBottom: 25 }}>
-              <Text type="secondary">
-                Semester 1 Pass Rate
-              </Text>
-
-              <h2 style={{ color: token.colorPrimary }}>
-                85%
-              </h2>
-            </div>
-
-            <div style={{ marginBottom: 25 }}>
-              <Text type="secondary">
-                Semester 2 Pass Rate
-              </Text>
-
-              <h2 style={{ color: token.colorSuccess }}>
-                78%
-              </h2>
-            </div>
-
-            <div>
-              <Text type="secondary">
-                Placement Readiness
-              </Text>
-
-              <h2 style={{ color: token.colorWarning }}>
-                69%
-              </h2>
-            </div>
-
-          </Card>
-        </Col>
-
-      </Row>
-
-      {/* Table */}
-
-      <Card
-        title="Recent Student Activity"
+  {[
+    {
+      label: "Semester 1 Pass Rate",
+      value: "85%",
+      color: "#1565C0",
+    },
+    {
+      label: "Semester 2 Pass Rate",
+      value: "78%",
+      color: "#2E7D32",
+    },
+    {
+      label: "Placement Readiness",
+      value: "69%",
+      color: "#EF6C00",
+    },
+  ].map((item, index) => (
+    <div
+      className="overview-item"
+      key={index}
+      style={{ marginBottom: "24px" }}
+    >
+      <div
+        className="overview-label"
         style={{
-          marginTop: 24,
-          boxShadow: token.boxShadow
+          fontSize: "14px",
+          color: "#64748b",
+          marginBottom: "6px",
         }}
       >
+        {item.label}
+      </div>
+
+      <div
+        className="overview-value"
+        style={{
+          color: item.color,
+          fontSize: "32px",   // smaller size
+          fontWeight: 700,
+          lineHeight: 1.2,
+        }}
+      >
+        {item.value}
+      </div>
+    </div>
+  ))}
+</div>
+      </div>
+
+      {/* =========================
+          TABLE
+      ========================= */}
+      <div className="dashboard-card dashboard-table">
+        <h2>Recent Student Activity</h2>
+
         <Table
           columns={columns}
           dataSource={data}
           pagination={false}
           scroll={{ x: 700 }}
         />
-      </Card>
+      </div>
 
-      {/* Buttons */}
+      {/* =========================
+          QUICK REPORTS
+      ========================= */}
+      <div className="dashboard-card">
+        <h2>Quick Reports</h2>
 
-     <Card
-  title="Quick Reports"
-  style={{
-    marginTop: 24,
-    boxShadow: token.boxShadow
-  }}
->
-  <Space
-    wrap
-    direction={isMobile ? "vertical" : "horizontal"}
-    style={{
-      width: isMobile ? "100%" : "auto"
-    }}
-  >
+        <div className="quick-actions">
+          <Button
+            type="primary"
+            onClick={() =>
+              navigate("/s-admin/attendance-report")
+            }
+          >
+            Attendance Reports
+          </Button>
 
-    <Button
-      block={isMobile}
-      type="primary"
-      onClick={() => navigate("/s-admin/attendance-report")}
-    >
-      Attendance Reports
-    </Button>
+          <Button
+            type="primary"
+            onClick={() =>
+              navigate("/s-admin/students")
+            }
+          >
+            Student Reports
+          </Button>
 
-    <Button
-      block={isMobile}
-      type="primary"
-      onClick={() => navigate("/s-admin/students")}
-    >
-      Student Reports
-    </Button>
+          <Button
+            type="primary"
+            onClick={() =>
+              navigate("/s-admin/classes")
+            }
+          >
+            Class Reports
+          </Button>
 
-    <Button
-      block={isMobile}
-      type="primary"
-      onClick={() => navigate("/s-admin/classes")}
-    >
-      Class Reports
-    </Button>
-
-    <Button
-      block={isMobile}
-      type="primary"
-      onClick={() => navigate("/s-admin/sections")}
-    >
-      Section Reports
-    </Button>
-
-  </Space>
-</Card>
-
+          <Button
+            type="primary"
+            onClick={() =>
+              navigate("/s-admin/sections")
+            }
+          >
+            Section Reports
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
